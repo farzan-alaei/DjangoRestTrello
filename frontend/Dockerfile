@@ -1,7 +1,5 @@
-# frontend/Dockerfile
-
 # استفاده از تصویر پایه node
-FROM node:14
+FROM node:20-slim
 
 # تنظیم پوشه کاری
 WORKDIR /app
@@ -12,9 +10,6 @@ RUN npm install
 
 # کپی کردن باقی فایل‌های پروژه
 COPY . .
-
-# ساخت پروژه برای تولید
-RUN npm run build
 
 # باز کردن پورت مورد نیاز
 EXPOSE 5000
