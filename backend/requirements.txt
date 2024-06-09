@@ -3,3 +3,4 @@ djangorestframework==3.15.1
 django-cors-headers
 psycopg
 psycopg-binary
+djangorestframework-simplejwt

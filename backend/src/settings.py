@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # third party
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",
     "psycopg",
     "psycopg_binary",
     # Developed app
@@ -159,3 +160,10 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "accounts.authentication.EmailOrMobileBackend",
 ]
+
+# JWT Authentication settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
