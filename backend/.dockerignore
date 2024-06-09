@@ -1,0 +1,4 @@
+venv
+requirements.txt
+db.sqlite3
+entrypoint.sh

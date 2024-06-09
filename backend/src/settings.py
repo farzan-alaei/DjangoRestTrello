@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "psycopg",
     "psycopg_binary",
+    # Developed app
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -124,7 +126,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tehran"
 
 USE_I18N = True
 
@@ -145,4 +147,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Corsheaders settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5000",
+]
+
+
+# Custom User Authentication
+AUTH_USER_MODEL = "accounts.CustomUser"
+
+
+# Custom Authentication
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "accounts.authentication.EmailOrMobileBackend",
 ]
