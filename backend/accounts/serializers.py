@@ -1,5 +1,3 @@
-from rest_framework_simplejwt.serializers import TokenObtainSerializer
-from django.contrib.auth import authenticate
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,10 +7,17 @@ User = get_user_model()
 
 
 class CustomTokenObtainPairSerializer(serializers.Serializer):
+    """
+    custom token obtain pair serializer
+    """
+
     email_or_mobile = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
 
     def validate(self, attrs):
+        """
+        validate custom token obtain pair serializer for authentication with email or mobile
+        """
         email_or_mobile = attrs.get("email_or_mobile")
         password = attrs.get("password")
 
