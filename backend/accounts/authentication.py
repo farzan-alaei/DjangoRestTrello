@@ -6,7 +6,13 @@ User = get_user_model()
 
 
 class EmailOrMobileBackend(ModelBackend):
+    """
+    custom authentication backend for email or mobile
+    """
     def authenticate(self, request, username=None, password=None, **kwargs):
+        """
+        custom authentication backend for email or mobile
+        """
         user = None
         if username:
             if "@" in username:
@@ -36,6 +42,9 @@ class EmailOrMobileBackend(ModelBackend):
         return None
 
     def get_user(self, user_id):
+        """
+        get user by id
+        """
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:

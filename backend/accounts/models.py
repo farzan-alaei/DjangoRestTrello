@@ -5,6 +5,9 @@ from accounts.managers import CustomUserManager
 
 
 class CustomUser(AbstractUser):
+    """
+    Custom user model with email and mobile fields for authenticated with email or mobile
+    """
     username = None
     email = models.EmailField(_("email address"), unique=True, null=True, blank=True)
     mobile = models.CharField(max_length=15, unique=True, null=True, blank=True)

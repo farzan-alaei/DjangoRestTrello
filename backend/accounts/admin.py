@@ -10,6 +10,10 @@ from accounts.models import CustomUser
 
 
 class CustomUserAdmin(UserAdmin):
+    """
+    Custom user model admin for viewing and editing users
+    """
+
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
