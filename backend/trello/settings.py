@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "psycopg_binary",
     # Developed app
     "accounts",
+    "core",
 ]
 
 MIDDLEWARE = [
