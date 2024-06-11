@@ -22,6 +22,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "mobile",
         "full_name",
+        "date_joined",
         "is_staff",
         "is_active",
     )
