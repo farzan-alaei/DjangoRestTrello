@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.managers import CustomUserManager
+from accounts.validators import validate_mobile
 from core.models import SoftDeleteModel, BaseModel
 
 
@@ -12,7 +13,9 @@ class CustomUser(AbstractUser, BaseModel, SoftDeleteModel):
 
     username = None
     email = models.EmailField(_("email address"), unique=True, null=True, blank=True)
-    mobile = models.CharField(max_length=15, unique=True, null=True, blank=True)
+    mobile = models.CharField(
+        max_length=15, unique=True, null=True, blank=True, validators=[validate_mobile]
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["mobile"]
