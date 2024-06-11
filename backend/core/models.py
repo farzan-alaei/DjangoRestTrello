@@ -43,7 +43,7 @@ class SoftDeleteModel(models.Model):
         null=True, blank=True, editable=False, db_index=True
     )
 
-    def delete(self):
+    def delete(self, using=None, keep_parents=False):
         self.is_deleted = True
         self.deleted_at = timezone.now()
         self.save()

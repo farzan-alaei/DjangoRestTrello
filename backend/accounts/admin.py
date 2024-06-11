@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Q
 
 from accounts.forms import (
     CustomUserCreationForm,
@@ -20,7 +21,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         "email",
         "mobile",
-        "get_full_name",
+        "full_name",
         "is_staff",
         "is_active",
     )
@@ -68,6 +69,14 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ("email",)
     ordering = ("email",)
+
+    def delete_model(self, request, obj):
+        obj.delete()
+
+    def get_queryset(self, request):
+        return CustomUser.objects.filter(
+            Q(is_deleted=False) | Q(is_deleted__isnull=True)
+        )
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
