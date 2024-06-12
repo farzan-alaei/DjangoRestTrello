@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from workspaces.models import WorkspacesMembership
+from workspaces.models import WorkspacesMembership, Workspace
 
 
 class BaseWorkspacePermission(permissions.BasePermission):
@@ -13,13 +13,16 @@ class BaseWorkspacePermission(permissions.BasePermission):
 class IsWorkspaceAdminOrMemberReadOnly(BaseWorkspacePermission):
     def has_object_permission(self, request, view, obj):
         membership = self.get_membership(request.user, obj)
+        if request.user == obj.owner:
+            return True
+
         if not membership:
             return False
 
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return membership.access_level == WorkspacesMembership.AccessLevel.OWNER
+        return membership.access_level == WorkspacesMembership.AccessLevel.ADMIN
 
 
 class IsWorkspaceMember(BaseWorkspacePermission):

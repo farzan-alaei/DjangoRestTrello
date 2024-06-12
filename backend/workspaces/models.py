@@ -7,13 +7,13 @@ from django.utils.translation import gettext_lazy as _
 
 class Workspace(BaseModel, TimeStampMixin, SoftDeleteModel):
     owner = models.ForeignKey(
-        "accounts.CustomUser", on_delete=models.CASCADE, related_name=_("workspaces")
+        "accounts.CustomUser", on_delete=models.CASCADE, related_name="workspaces"
     )
     title = models.CharField(max_length=255, blank=False, null=False)
     description = models.TextField(null=False, blank=True)
     member = models.ManyToManyField(
         "accounts.CustomUser",
-        related_name=_("membered_workspace"),
+        related_name="membered_workspace",
         through="WorkspacesMembership",
         through_fields=("workspace", "member"),
     )
@@ -27,19 +27,19 @@ class Workspace(BaseModel, TimeStampMixin, SoftDeleteModel):
 
 class WorkspacesMembership(BaseModel, TimeStampMixin, SoftDeleteModel):
     class AccessLevel(models.TextChoices):
-        OWNER = "owner", _("Owner")
+        ADMIN = "admin", _("Admin")
         MEMBER = "member", _("Member")
 
     workspace = models.ForeignKey(
-        "workspaces.Workspace", on_delete=models.CASCADE, related_name=_("membership")
+        "workspaces.Workspace", on_delete=models.CASCADE, related_name="membership"
     )
     member = models.ForeignKey(
         "accounts.CustomUser",
         on_delete=models.CASCADE,
-        related_name=_("workspace_membership"),
+        related_name="workspace_membership",
     )
     access_level = models.CharField(
-        choices=AccessLevel.choices, default=AccessLevel.MEMBER
+        max_length=10, choices=AccessLevel.choices, default=AccessLevel.MEMBER
     )
 
     def __str__(self):
@@ -47,4 +47,3 @@ class WorkspacesMembership(BaseModel, TimeStampMixin, SoftDeleteModel):
 
     class Meta:
         unique_together = ("workspace", "member")
-
