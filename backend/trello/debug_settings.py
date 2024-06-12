@@ -46,10 +46,12 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "psycopg",
     "psycopg_binary",
+    "debug_toolbar",
     # Developed app
     "core",
     "accounts",
     "workspaces",
+    "boards",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # third party
     "corsheaders.middleware.CorsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "trello.urls"
@@ -94,6 +97,12 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+#Debug toolbar
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 
 # DATABASES = {

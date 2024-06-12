@@ -4,3 +4,4 @@ django-cors-headers
 psycopg
 psycopg-binary
 djangorestframework-simplejwt
+django-debug-toolbar

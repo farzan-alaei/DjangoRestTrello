@@ -22,4 +22,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("accounts.urls")),
     path("workspaces/", include("workspaces.urls")),
+    path("boards/,", include("boards.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]

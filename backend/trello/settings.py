@@ -46,10 +46,12 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "psycopg",
     "psycopg_binary",
+    "debug_toolbar",
     # Developed app
     "core",
     "accounts",
     "workspaces",
+    "boards",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +64,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # third party
     "corsheaders.middleware.CorsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "trello.urls"
@@ -200,3 +203,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+
+# debug toolbar
+INTERNAL_IPS = ["localhost:8000", "127.0.0.1", "172.18.0.1"]
