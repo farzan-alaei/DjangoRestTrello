@@ -3,13 +3,21 @@ from workspaces.models import WorkspacesMembership, Workspace
 from accounts.serializers import UserSerializer
 
 
+class MembershipSerializer(serializers.ModelSerializer):
+    member = UserSerializer(read_only=True)
+
+    class Meta:
+        model = WorkspacesMembership
+        fields = ("member", "access_level")
+
+
 class WorkspaceSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
-    member = UserSerializer(many=True)
+    membership = MembershipSerializer(many=True)
 
     class Meta:
         model = Workspace
-        fields = ("id", "owner", "title", "description", "member")
+        fields = ("id", "owner", "title", "description", "membership")
         read_only_fields = ("owner",)
 
     def create(self, validated_data):
