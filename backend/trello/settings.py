@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # Developed app
     "core",
     "accounts",
+    "workspaces",
 ]
 
 MIDDLEWARE = [
