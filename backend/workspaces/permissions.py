@@ -4,6 +4,8 @@ from workspaces.models import WorkspacesMembership, Workspace
 
 class BaseWorkspacePermission(permissions.BasePermission):
     def get_membership(self, user, workspace):
+        if not user.is_authenticated:
+            return None
         try:
             return WorkspacesMembership.objects.get(member=user, workspace=workspace)
         except WorkspacesMembership.DoesNotExist:
