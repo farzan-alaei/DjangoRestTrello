@@ -5,7 +5,9 @@ FROM node:20-slim
 WORKDIR /app
 
 # کپی کردن فایل‌های package.json و نصب کتابخانه‌ها
-COPY package.json package-lock.json ./
+COPY package*.json ./
+COPY svelte.config.js ./
+COPY vite.config.js ./
 RUN npm install
 
 # کپی کردن باقی فایل‌های پروژه
