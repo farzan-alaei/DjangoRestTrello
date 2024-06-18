@@ -9,10 +9,10 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # کپی کردن باقی فایل‌های پروژه
-COPY frontend .
+COPY . .
 
 # باز کردن پورت مورد نیاز
-EXPOSE 5000
+EXPOSE 8080
 
 # اجرای سرور
 CMD ["npm", "run", "dev"]

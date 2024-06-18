@@ -17,7 +17,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "5000:5000"
+      - "8080:8080"
     volumes:
       - ./frontend:/app
     depends_on:
