@@ -26,7 +26,7 @@
             localStorage.setItem('access', data.access);
             localStorage.setItem('refresh', data.refresh);
 
-            goto('/profile');
+            await goto('/profile');
         } catch (err) {
             error = err.message;
         }

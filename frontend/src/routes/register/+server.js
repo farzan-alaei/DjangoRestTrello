@@ -1,9 +1,10 @@
-import {error, json} from '@sveltejs/kit';
+import {json, error} from '@sveltejs/kit';
 
 export async function POST({request}) {
     const {email_or_mobile, password} = await request.json();
 
-    const response = await fetch('http://backend:8000/auth/api/token/', {
+
+    const response = await fetch('http://backend:8000/auth/api/register/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -13,7 +14,7 @@ export async function POST({request}) {
 
     if (!response.ok) {
         const errData = await response.json();
-        return error(response.status, errData.message || 'Login failed');
+        return error(response.status, errData.message || 'Registration failed');
     }
 
     const data = await response.json();
