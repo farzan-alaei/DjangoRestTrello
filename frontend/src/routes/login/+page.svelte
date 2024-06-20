@@ -1,9 +1,12 @@
 <script>
     import {goto} from '$app/navigation';
+    import {isLoggedIn} from "../../stores/authStore.js";
+    import {onMount} from "svelte";
 
     let email_or_mobile = '';
     let password = '';
     let error = '';
+
 
     async function login(event) {
         event.preventDefault();
@@ -23,8 +26,9 @@
             }
 
             const data = await response.json();
-            localStorage.setItem('access', data.access);
-            localStorage.setItem('refresh', data.refresh);
+            document.cookie = `access=${data.access}; path=/;`;
+            document.cookie = `refresh=${data.refresh}; path=/;`;
+            isLoggedIn.set(true);
 
             await goto('/profile');
         } catch (err) {
