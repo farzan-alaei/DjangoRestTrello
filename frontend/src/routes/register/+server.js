@@ -4,7 +4,7 @@ export async function POST({request}) {
     const {email_or_mobile, password} = await request.json();
 
 
-    const response = await fetch('http://backend:8000/auth/api/register/', {
+    const response = await fetch('http://backend:8000/api/auth/register/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

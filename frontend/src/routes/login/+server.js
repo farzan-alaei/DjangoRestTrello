@@ -3,7 +3,7 @@ import {error, json} from '@sveltejs/kit';
 export async function POST({request}) {
     const {email_or_mobile, password} = await request.json();
 
-    const response = await fetch('http://backend:8000/auth/api/token/', {
+    const response = await fetch('http://backend:8000/api/auth/token/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

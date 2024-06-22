@@ -4,7 +4,7 @@ import {json} from '@sveltejs/kit';
 export async function POST({request}) {
     const {refresh} = await request.json();
 
-    const response = await fetch('http://backend:8000/auth/api/logout/', {
+    const response = await fetch('http://backend:8000/api/auth/logout/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
