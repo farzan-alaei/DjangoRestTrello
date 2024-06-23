@@ -35,11 +35,15 @@ class RegisterAPIView(APIView):
                 email=email_or_mobile, mobile=None, password=password
             )
             user.save()
-        else:
+        elif email_or_mobile.isdigit():
             user = User.objects.create_user(
                 mobile=email_or_mobile, email=None, password=password
             )
             user.save()
+        else:
+            return Response(
+                {"error": "Email or Mobile is not valid"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         refresh = RefreshToken.for_user(user)
 

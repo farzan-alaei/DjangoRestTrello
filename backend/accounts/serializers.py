@@ -29,11 +29,13 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
                 user = User.objects.get(email=email_or_mobile)
             except User.DoesNotExist:
                 raise AuthenticationFailed("Invalid email or password")
-        else:
+        elif email_or_mobile.isdigit():
             try:
                 user = User.objects.get(mobile=email_or_mobile)
             except User.DoesNotExist:
                 raise AuthenticationFailed("Invalid mobile or password")
+        else:
+            raise AuthenticationFailed("Invalid email or mobile")
 
         if not user.check_password(password):
             raise AuthenticationFailed("Invalid password")
