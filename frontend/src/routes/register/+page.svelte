@@ -8,6 +8,7 @@
     let confirmPassword = '';
     let error = '';
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;':"\\,.<>\/?]).{10,}$/;
 
     async function register(event) {
         event.preventDefault();
@@ -15,6 +16,15 @@
             error = 'Passwords do not match';
             return;
         }
+
+        if (!passwordRegex.test(password)) {
+            error = "Password must be at least 10 characters" +
+                " long and include at least one uppercase letter, " +
+                "one lowercase letter, one number, and one special character";
+            return;
+        }
+
+
         error = '';
         try {
             const response = await fetch('/register', {
