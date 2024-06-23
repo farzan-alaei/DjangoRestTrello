@@ -11,10 +11,6 @@ from accounts.models import CustomUser
 
 
 class CustomUserAdmin(UserAdmin):
-    """
-    Custom user model admin for viewing and editing users
-    """
-
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
@@ -75,9 +71,7 @@ class CustomUserAdmin(UserAdmin):
         obj.delete()
 
     def get_queryset(self, request):
-        return CustomUser.objects.filter(
-            Q(is_deleted=False) | Q(is_deleted__isnull=True)
-        )
+        return CustomUser.objects.filter(is_deleted__isnull=True)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
