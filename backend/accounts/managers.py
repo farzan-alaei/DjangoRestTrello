@@ -1,8 +1,9 @@
 from django.contrib.auth.models import BaseUserManager
 from django.utils.translation import gettext_lazy as _
+from core.models import SoftManager
 
 
-class CustomUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager, SoftManager):
     """
     Creates a new user with the given email, mobile, password, and optional extra fields.
     """

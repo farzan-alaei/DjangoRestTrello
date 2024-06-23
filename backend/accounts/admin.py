@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import Q
+
 
 from accounts.forms import (
     CustomUserCreationForm,
@@ -71,7 +71,7 @@ class CustomUserAdmin(UserAdmin):
         obj.delete()
 
     def get_queryset(self, request):
-        return CustomUser.objects.filter(is_deleted__isnull=True)
+        return CustomUser.objects.filter(is_deleted=False)
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

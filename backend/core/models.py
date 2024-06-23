@@ -1,6 +1,6 @@
 from django.db import models
 from uuid import uuid4
-from django.db.models import QuerySet, Manager, Q
+from django.db.models import QuerySet, Manager
 from django.utils import timezone
 
 # Create your models here.
@@ -23,25 +23,21 @@ class TimeStampMixin(models.Model):
 
 class SoftQuerySet(QuerySet):
     def delete(self):
-        return self.update(is_deleted=True, deleted_at=timezone.now())
+        return super().update(is_deleted=True, deleted_at=timezone.now())
 
 
 class SoftManager(Manager):
-    def get_queryset(self) -> QuerySet:
-        return SoftQuerySet(self.model, self._db).filter(
-            Q(is_deleted=False) | Q(is_deleted__isnull=True)
-        )
+    def get_queryset(self):
+        return SoftQuerySet(self.model, using=self._db).filter(is_deleted=False)
 
 
 class SoftDeleteModel(models.Model):
-    objects = SoftManager()
-
-    is_deleted = models.BooleanField(
-        null=True, blank=True, editable=False, db_index=True
-    )
+    is_deleted = models.BooleanField(default=False, editable=False, db_index=True)
     deleted_at = models.DateTimeField(
         null=True, blank=True, editable=False, db_index=True
     )
+
+    objects = SoftManager()
 
     def delete(self, using=None, keep_parents=False):
         self.is_deleted = True
