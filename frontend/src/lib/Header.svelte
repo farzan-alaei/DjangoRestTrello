@@ -59,7 +59,7 @@
             <Button size="xs" href="/register">signup</Button>
         {/if}
         <DarkMode class="text-primary-500 dark:text-primary-600 border dark:border-gray-800 p-1.5 text-sm"/>
-        <NavHamburger class="p-5"/>
+        <NavHamburger />
     </div>
     <NavUl {activeUrl} {activeClass} {nonActiveClass}>
         <NavLi href="/"> Home</NavLi>
