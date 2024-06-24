@@ -4,8 +4,8 @@
     import {goto} from '$app/navigation';
     import {isLoggedIn} from '../stores/authStore';
     import {onMount} from 'svelte';
-    import "../app.css";
     import {Navbar, NavBrand, NavLi, NavUl, NavHamburger, Button} from 'flowbite-svelte';
+    import {DarkMode} from "flowbite-svelte";
 
     $: activeUrl = $page.url.pathname;
     let activeClass = 'text-white bg-green-700 md:bg-transparent md:text-green-700 md:dark:text-white dark:bg-green-600 md:dark:bg-transparent';
@@ -50,15 +50,16 @@
         <img src="/django-icon-svgrepo-com%20(1).svg" class="me-2 h-4 sm:h-6" alt="django Logo"/>
         <span class="self-center whitespace-nowrap text-lg font-semibold dark:text-white">DRF Trello</span>
     </NavBrand>
-    <div class="flex md:order-2 space-x-2">
+    <div class="flex items-center md:order-1 space-x-1">
         {#if loggedIn}
-            <Button color="none"></Button>
-            <Button size="sm" href="/" on:click={logout}>logout</Button>
+            <Button size="xs" color="none"></Button>
+            <Button size="xs" href="/" on:click={logout}>logout</Button>
         {:else}
-            <Button size="sm" color="none" href="/login">login</Button>
-            <Button size="sm" href="/register">signUp</Button>
+            <Button size="xs" color="none" class="border dark:border-gray-800" href="/login">login</Button>
+            <Button size="xs" href="/register">signup</Button>
         {/if}
-        <NavHamburger/>
+        <DarkMode class="text-primary-500 dark:text-primary-600 border dark:border-gray-800 p-1.5 text-sm"/>
+        <NavHamburger class="p-5"/>
     </div>
     <NavUl {activeUrl} {activeClass} {nonActiveClass}>
         <NavLi href="/"> Home</NavLi>

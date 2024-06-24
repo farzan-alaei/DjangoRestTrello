@@ -1,7 +1,6 @@
 <script>
     import {goto} from '$app/navigation';
     import {isLoggedIn} from "../../stores/authStore.js";
-    import "../../app.css";
 
     let email_or_mobile = '';
     let password = '';
