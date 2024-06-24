@@ -3,8 +3,10 @@
     import {FacebookSolid, GithubSolid, DiscordSolid, TwitterSolid} from 'flowbite-svelte-icons';
 </script>
 
-<Footer footerType="socialmedia">
-    <div class="md:flex md:justify-between">
+
+<Footer footerType="socialmedia" class="border-t-2 dark:border-gray-700">
+    <div class="mt-5 mb-5"></div>
+    <div class="md:flex md:justify-between mt-5">
         <div class="mb-4 md:mb-0">
             <FooterBrand href="/" src="/django-icon-svgrepo-com%20(1).svg" alt="Django Logo" name="Django Rest Trello"/>
         </div>

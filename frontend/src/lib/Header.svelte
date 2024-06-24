@@ -45,28 +45,28 @@
 </script>
 
 
-<Navbar>
-    <NavBrand href="/">
-        <img src="/django-icon-svgrepo-com%20(1).svg" class="me-2 h-4 sm:h-6" alt="django Logo"/>
-        <span class="self-center whitespace-nowrap text-lg font-semibold dark:text-white">DRF Trello</span>
-    </NavBrand>
-    <div class="flex items-center md:order-1 space-x-1">
-        {#if loggedIn}
-            <Button size="xs" color="none"></Button>
-            <Button size="xs" href="/" on:click={logout}>logout</Button>
-        {:else}
-            <Button size="xs" color="none" class="border dark:border-gray-800" href="/login">login</Button>
-            <Button size="xs" href="/register">signup</Button>
-        {/if}
-        <DarkMode class="text-primary-500 dark:text-primary-600 border dark:border-gray-800 p-1.5 text-sm"/>
-        <NavHamburger />
-    </div>
-    <NavUl {activeUrl} {activeClass} {nonActiveClass}>
-        <NavLi href="/"> Home</NavLi>
-        {#if loggedIn}
-            <NavLi href="/profile">Profile</NavLi>
-        {/if}
-        <NavLi href="/about">About</NavLi>
-        <NavLi href="/contact">Contact</NavLi>
-    </NavUl>
+<Navbar class="border-b-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800">
+        <NavBrand href="/">
+            <img src="/django-icon-svgrepo-com%20(1).svg" class="me-2 h-4 sm:h-6" alt="django Logo"/>
+            <span class="self-center whitespace-nowrap text-lg font-semibold dark:text-white">DRF Trello</span>
+        </NavBrand>
+        <div class="flex items-center md:order-1 space-x-1">
+            {#if loggedIn}
+                <Button size="xs" color="none"></Button>
+                <Button size="xs" href="/" on:click={logout}>logout</Button>
+            {:else}
+                <Button size="xs" color="none" class="border dark:border-gray-800" href="/login">login</Button>
+                <Button size="xs" href="/register">signup</Button>
+            {/if}
+            <DarkMode class="text-primary-500 dark:text-primary-600 border dark:border-gray-800 p-1.5 text-sm"/>
+            <NavHamburger/>
+        </div>
+        <NavUl {activeUrl} {activeClass} {nonActiveClass}>
+            <NavLi href="/"> Home</NavLi>
+            {#if loggedIn}
+                <NavLi href="/profile">Profile</NavLi>
+            {/if}
+            <NavLi href="/about">About</NavLi>
+            <NavLi href="/contact">Contact</NavLi>
+        </NavUl>
 </Navbar>
