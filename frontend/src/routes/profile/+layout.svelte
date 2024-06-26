@@ -18,25 +18,25 @@
                 <SidebarItem label="Dashboard" href="/profile">
                     <svelte:fragment slot="icon">
                         <ChartPieSolid
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
+                                class="w-6 h-6 text-primary-700 transition duration-75 dark:text-primary-700 group-hover:text-gray-900 dark:group-hover:text-white"/>
                     </svelte:fragment>
                 </SidebarItem>
                 <SidebarItem label="Workspaces" href="/profile/workspaces">
                     <svelte:fragment slot="icon">
                         <GridSolid
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
+                                class="w-6 h-6 text-primary-700 transition duration-75 dark:text-primary-700 group-hover:text-gray-900 dark:group-hover:text-white"/>
                     </svelte:fragment>
                 </SidebarItem>
                 <SidebarItem label="Boards" href="/profile/boards">
                     <svelte:fragment slot="icon">
                         <ClipboardListSolid
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
+                                class="w-6 h-6 text-primary-700 transition duration-75 dark:text-primary-700 group-hover:text-gray-900 dark:group-hover:text-white"/>
                     </svelte:fragment>
                 </SidebarItem>
                 <SidebarItem label="Members" href="/profile/members">
                     <svelte:fragment slot="icon">
                         <UsersGroupSolid
-                                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"/>
+                                class="w-6 h-6 text-primary-700 transition duration-75 dark:text-primary-700 group-hover:text-gray-900 dark:group-hover:text-white"/>
                     </svelte:fragment>
                 </SidebarItem>
             </SidebarGroup>
