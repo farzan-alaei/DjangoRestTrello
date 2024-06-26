@@ -2,7 +2,7 @@
     <div class="max-w-screen-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24">
         <div class="max-w mx-auto text-center">
             <h2 class="text-3xl font-extrabold leading-tight tracking-tight text-primary-600 sm:text-4xl dark:text-white">
-                HomePage <small><small>(DRF Trello)</small></small>
+                AboutPage <small><small>(DRF Trello)</small></small>
             </h2>
             <p class="mt-4 text-justify text-gray-500 sm:text-xl dark:text-gray-400">
                 I've crafted this project akin to Trello, serving as a comprehensive exercise to enhance my backend
