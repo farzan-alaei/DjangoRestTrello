@@ -79,10 +79,16 @@ class WorkspacesMemberList(
 
 
 class WorkspacesList(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
+    generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin
 ):
-    queryset = Workspace.objects.all()
     serializer_class = WorkspaceSerializer
+    permission_classes = [IsWorkspaceAdminOrMemberReadOnly]
+
+    def get_queryset(self):
+        return Workspace.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

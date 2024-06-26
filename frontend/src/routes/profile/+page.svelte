@@ -5,7 +5,6 @@
         ChartPieSolid,
         GridSolid,
         ClipboardListSolid,
-        ArrowRightToBracketOutline,
         UsersGroupSolid,
     } from 'flowbite-svelte-icons';
 
