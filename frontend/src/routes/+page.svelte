@@ -1,3 +1,14 @@
+<script>
+    import {GradientButton} from "flowbite-svelte";
+    import {isLoggedIn} from "../stores/authStore.js";
+    import {onMount} from "svelte";
+
+    onMount(() => {
+        isLoggedIn.set(document.cookie.includes('access') && document.cookie.includes('refresh'));
+    });
+
+    $: loggedIn = $isLoggedIn;
+</script>
 <section class="bg-white dark:bg-gray-900 antialiased">
     <div class="max-w-screen-xl px-4 py-8 mx-auto lg:px-6 sm:py-16 lg:py-24">
         <div class="max-w mx-auto text-center">
@@ -21,7 +32,7 @@
         </div>
 
         <!-- Decorative elements -->
-        <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
+        <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
             <!-- Example decorative elements -->
             <div class="p-6 bg-primary-200 dark:bg-gray-800 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-primary-700 dark:text-white mb-2">Achievements</h3>
@@ -30,7 +41,6 @@
                     SvelteKit.
                 </p>
             </div>
-
             <div class="p-6 bg-primary-200 dark:bg-gray-800 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-primary-700 dark:text-white mb-2">Technologies Used</h3>
                 <ul class="list-disc text-gray-700 dark:text-gray-300 pl-4">
@@ -41,8 +51,11 @@
                     <li>Flowbite Svelte</li>
                 </ul>
             </div>
-
-
         </div>
+        {#if !loggedIn}
+            <div class="flex justify-center mt-8">
+                <GradientButton shadow color="cyanToBlue" href="/register">Get Started</GradientButton>
+            </div>
+        {/if}
     </div>
 </section>

@@ -19,7 +19,7 @@
                     Email
                 </h3>
                 <p class="text-lg font-normal text-gray-500 dark:text-gray-400">
-                    You can email me directly at <a href="mailto:farzan.70@gmail.com" class="text-primary-700 hover:underline">farzan.70@gmail.com</a>.
+                    You can email me directly at <a href="mailto:farzan.70@gmail.com" class="text-primary-700 hover:underline">here</a>.
                 </p>
             </div>
 
