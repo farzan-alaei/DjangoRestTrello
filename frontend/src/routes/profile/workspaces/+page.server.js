@@ -26,7 +26,7 @@ export async function load({ fetch, request }) {
     }
 
     const workspaces = await response.json();
-    console.log(workspaces)
+
     return {
         workspaces: workspaces || []
     };
