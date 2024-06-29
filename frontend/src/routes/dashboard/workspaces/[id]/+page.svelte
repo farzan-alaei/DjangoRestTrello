@@ -16,7 +16,10 @@
         <!-- Workspace Owner -->
         <div class="mb-8 text-center">
             <h2 class="text-2xl font-bold text-white">Workspace Owner</h2>
-            <p class="text-xl text-white mt-2 break-words">{data.workspace.owner.email}</p>
+            <p class="text-xl text-white mt-2 break-words">
+                {#if data.workspace.owner.email}{data.workspace.owner.email}{:else if data.workspace.owner.mobile}{data.workspace.owner.mobile}{/if}
+            </p>
+
         </div>
 
         <!-- Members -->
