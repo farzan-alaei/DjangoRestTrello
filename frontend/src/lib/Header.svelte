@@ -64,7 +64,7 @@
         <NavUl {activeUrl} {activeClass} {nonActiveClass}>
             <NavLi href="/"> Home</NavLi>
             {#if loggedIn}
-                <NavLi href="/profile">Profile</NavLi>
+                <NavLi href="/dashboard">Dashboard</NavLi>
             {/if}
             <NavLi href="/about">About</NavLi>
             <NavLi href="/contact">Contact</NavLi>

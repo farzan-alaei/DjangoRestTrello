@@ -31,7 +31,7 @@
             document.cookie = `refresh=${data.refresh}; path=/;`;
             isLoggedIn.set(true);
 
-            await goto('/profile');
+            await goto('/dashboard');
         } catch (err) {
             error = err.message;
         }

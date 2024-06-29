@@ -24,7 +24,7 @@ export async function handle({event, resolve}) {
     if (loggedIn && (route.id === '/login' || route.id === '/register')) {
         return new Response(null, {
             status: 302,
-            headers: {Location: '/profile'}
+            headers: {Location: '/dashboard'}
         });
     }
 

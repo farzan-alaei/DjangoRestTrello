@@ -10,12 +10,12 @@
 <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
     {#if data.workspaces.length > 0}
         {#each data.workspaces as workspace}
-            <div class="p-6 bg-primary-300 dark:bg-gray-800 rounded-lg shadow-md">
-                <h3 class="text-2xl font-bold leading-tight text-gray-900 dark:text-white">
-                    <a href="/profile/workspaces/{workspace.id}">{workspace.title}</a>
+                <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold text-white">
+                    <a href={`/dashboard/workspaces/${workspace.id}`}>{workspace.title}</a>
                 </h3>
-                <div class="mt-2 flex items-center border-t border-primary-700 pt-3 dark:bg-gray-800">
-                    <p class="text-lg font-normal text-gray-500 dark:text-gray-300">
+                <div class="mt-2 flex items-center border-t border-white pt-3">
+                    <p class="text-md text-white mt-2">
                         {workspace.description}
                     </p>
                 </div>
