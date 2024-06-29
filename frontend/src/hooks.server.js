@@ -28,5 +28,12 @@ export async function handle({event, resolve}) {
         });
     }
 
+    if (!loggedIn && (route.id === '/dashboard')) {
+        return new Response(null, {
+            status: 302,
+            headers: {Location: '/login'}
+        });
+    }
+
     return await resolve(event);
 }

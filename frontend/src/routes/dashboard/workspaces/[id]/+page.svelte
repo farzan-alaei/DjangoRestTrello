@@ -4,7 +4,7 @@
     console.log(data);
 </script>
 
-<div class="container mx-auto mt-12 p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+<div class="container mx-auto p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
     <!-- Overall Wrapper -->
     <div class="p-6 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg shadow-lg">
         <!-- Title and Description -->

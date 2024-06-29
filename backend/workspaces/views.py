@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from workspaces.permissions import IsWorkspaceAdminOrMemberReadOnly
 from rest_framework import generics, mixins, status
+from django.db.models import Q
 
 
 # Create your views here.
@@ -85,7 +86,10 @@ class WorkspacesList(
     permission_classes = [IsWorkspaceAdminOrMemberReadOnly]
 
     def get_queryset(self):
-        return Workspace.objects.filter(owner=self.request.user)
+        user = self.request.user
+        return Workspace.objects.filter(
+            Q(owner=user) | Q(membership__member=user)
+        ).distinct()
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
