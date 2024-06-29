@@ -1,5 +1,5 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
-from accounts.serializers import CustomTokenObtainPairSerializer
+from accounts.serializers import CustomTokenObtainPairSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework import status
@@ -42,7 +42,8 @@ class RegisterAPIView(APIView):
             user.save()
         else:
             return Response(
-                {"error": "Email or Mobile is not valid"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "Email or Mobile is not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         refresh = RefreshToken.for_user(user)
@@ -52,6 +53,7 @@ class RegisterAPIView(APIView):
                 "message": "User created successfully",
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
+                "user": UserSerializer(user).data,
             },
             status=status.HTTP_201_CREATED,
         )

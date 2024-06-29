@@ -86,6 +86,8 @@ class WorkspacesList(
     permission_classes = [IsWorkspaceAdminOrMemberReadOnly]
 
     def get_queryset(self):
+        if self.request.user.is_anonymous:
+            return Workspace.objects.none()
         user = self.request.user
         return Workspace.objects.filter(
             Q(owner=user) | Q(membership__member=user)

@@ -48,10 +48,11 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
+            "user": UserSerializer(user).data,
         }
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["id", "email", "mobile"]
+        fields = ["id", "email", "mobile", "first_name", "last_name"]

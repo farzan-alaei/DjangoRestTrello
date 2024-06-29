@@ -41,6 +41,7 @@
             const data = await response.json();
             document.cookie = `access=${data.access}; path=/;`;
             document.cookie = `refresh=${data.refresh}; path=/;`;
+            localStorage.setItem('user', JSON.stringify(data.user));
             isLoggedIn.set(true);
 
             await goto('/dashboard');

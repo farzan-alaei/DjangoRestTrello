@@ -13,7 +13,7 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 class WorkspaceSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
-    membership = MembershipSerializer(many=True)
+    membership = MembershipSerializer(many=True, read_only=True)
 
     class Meta:
         model = Workspace
