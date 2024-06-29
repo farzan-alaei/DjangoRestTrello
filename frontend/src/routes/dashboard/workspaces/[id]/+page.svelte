@@ -20,19 +20,22 @@
         </div>
 
         <!-- Members -->
-        <div>
-            <h2 class="text-3xl font-bold text-white mb-6 text-center">Members</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {#each data.workspace.membership as membership}
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg overflow-hidden">
-                        <div class="text-center">
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white break-words">{membership.member.email}</h3>
-                            <p class="text-md text-gray-600 dark:text-gray-300 mt-2 break-words">{membership.member.mobile}</p>
-                            <p class="text-md text-gray-600 dark:text-gray-300 mt-2 break-words">Access Level: {membership.access_level}</p>
+        {#if data.workspace.membership.length > 0}
+            <div>
+                <h2 class="text-3xl font-bold text-white mb-6 text-center">Members</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {#each data.workspace.membership as membership}
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg overflow-hidden">
+                            <div class="text-center">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white break-words">{membership.member.email}</h3>
+                                <p class="text-md text-gray-600 dark:text-gray-300 mt-2 break-words">{membership.member.mobile}</p>
+                                <p class="text-md text-gray-600 dark:text-gray-300 mt-2 break-words">Access
+                                    Level: {membership.access_level}</p>
+                            </div>
                         </div>
-                    </div>
-                {/each}
+                    {/each}
+                </div>
             </div>
-        </div>
+        {/if}
     </div>
 </div>
