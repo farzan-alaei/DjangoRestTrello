@@ -1,6 +1,6 @@
 <script lang="ts">
     /** @type {import('./$types').PageServerData} */
-    import {Button, Modal, Label, Input} from 'flowbite-svelte';
+    import {Button, Modal, Label, Input, Textarea} from 'flowbite-svelte';
     import {page} from "$app/stores";
 
     let formModal = false;
@@ -56,7 +56,7 @@
         </Label>
         <Label class="space-y-2">
             <span>Description</span>
-            <Input type="text" bind:value={workspaceDescription} class="border" placeholder="Description" required/>
+            <Textarea type="text" bind:value={workspaceDescription} class="border" placeholder="Description" required/>
         </Label>
         <Button type="submit" class="w-full">Create Workspace</Button>
     </form>
