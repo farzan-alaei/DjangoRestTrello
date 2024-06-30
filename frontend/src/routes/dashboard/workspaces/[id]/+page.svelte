@@ -1,7 +1,6 @@
 <script lang="ts">
     /** @type {import('./$types').PageServerData} */
     export let data;
-    console.log(data);
 </script>
 
 <div class="container mx-auto p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">

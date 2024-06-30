@@ -52,11 +52,11 @@
         <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Create a New Workspace</h3>
         <Label class="space-y-2">
             <span>Title</span>
-            <Input type="text" bind:value={workspaceTitle} placeholder="Title" required/>
+            <Input type="text" bind:value={workspaceTitle} placeholder="Title" class="border" required/>
         </Label>
         <Label class="space-y-2">
             <span>Description</span>
-            <Input type="text" bind:value={workspaceDescription} placeholder="Description" required/>
+            <Input type="text" bind:value={workspaceDescription} class="border" placeholder="Description" required/>
         </Label>
         <Button type="submit" class="w-full">Create Workspace</Button>
     </form>
