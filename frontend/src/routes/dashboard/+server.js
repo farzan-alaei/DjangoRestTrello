@@ -1,3 +1,4 @@
+/** @type {import('./$types').PageServerLoad} */
 export async function POST({request}) {
     const {email, mobile, first_name, last_name} = await request.json();
 
@@ -15,12 +16,9 @@ export async function POST({request}) {
     }
 
     const response = await fetch('http://backend:8000/api/auth/profile/', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({email, mobile, first_name, last_name})
+        method: 'PUT', headers: {
+            'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}`
+        }, body: JSON.stringify({email, mobile, first_name, last_name})
     });
 
     if (response.ok) {

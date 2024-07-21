@@ -1,56 +1,24 @@
 <script lang="ts">
-    import {Button, Modal, Label, Input, Textarea, Alert} from 'flowbite-svelte';
-    import {onMount} from 'svelte';
-    import {page} from "$app/stores";
-    import {getAccessToken} from '../../../stores/authStore.js';
+    import {Alert, Button, Input, Label, Modal, Textarea} from 'flowbite-svelte';
     import {InfoCircleSolid} from "flowbite-svelte-icons";
 
     let formModal = false;
     let workspaceTitle = '';
     let workspaceDescription = '';
-    let data = {workspaces: []};
     let successMessage = '';
     let errorMessage = '';
 
-    onMount(async () => {
-        try {
-            const accessToken = getAccessToken();
-            if (!accessToken) {
-                throw new Error('Access token not found');
-            }
-            const response = await fetch('http://127.0.0.1:8000/api/workspaces/', {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            });
-
-            if (response.ok) {
-                const workspaces = await response.json();
-                data.workspaces = workspaces || [];
-            } else {
-                throw new Error('Failed to load workspaces');
-            }
-        } catch (error) {
-            console.error('Error loading workspaces:', error);
-            errorMessage = 'Failed to load workspaces. Please try again.';
-        }
-    });
-
+    /** @type {import('./$types').PageData} */
+    export let data;
     async function createWorkspace() {
         successMessage = '';
         errorMessage = '';
 
         try {
-            const accessToken = getAccessToken();
-            if (!accessToken) {
-                throw new Error('Access token not found');
-            }
-
-            const response = await fetch('http://127.0.0.1:8000/api/workspaces/', {
+            const response = await fetch('/dashboard/workspaces', { // Adjust path as needed
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({title: workspaceTitle, description: workspaceDescription})
             });
@@ -70,8 +38,6 @@
             errorMessage = 'Failed to create workspace. Please try again.';
         }
     }
-
-    $: $page.url.pathname;
 </script>
 
 <div class="mt-4">
@@ -79,21 +45,21 @@
 </div>
 
 <div class="flex justify-center mt-4">
-    <Button on:click={() => (formModal = true)} class="flex">Add Workspace</Button>
+    <Button class="flex" on:click={() => (formModal = true)}>Add Workspace</Button>
 </div>
 
-<Modal bind:open={formModal} size="xs" autoclose={false} class="w-full">
+<Modal autoclose={false} bind:open={formModal} class="w-full" size="xs">
     <form class="flex flex-col space-y-6" on:submit|preventDefault={createWorkspace}>
         <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Create a New Workspace</h3>
         <Label class="space-y-2">
             <span>Title</span>
-            <Input type="text" bind:value={workspaceTitle} placeholder="Title" class="border" required/>
+            <Input bind:value={workspaceTitle} class="border" placeholder="Title" required type="text"/>
         </Label>
         <Label class="space-y-2">
             <span>Description</span>
-            <Textarea type="text" bind:value={workspaceDescription} class="border" placeholder="Description" required/>
+            <Textarea bind:value={workspaceDescription} class="border" placeholder="Description" required type="text"/>
         </Label>
-        <Button type="submit" class="w-full">Create Workspace</Button>
+        <Button class="w-full" type="submit">Create Workspace</Button>
     </form>
 </Modal>
 
@@ -109,7 +75,7 @@
 
 {#if errorMessage}
     <div class="m-6">
-        <Alert border color="red" dissmissible>
+        <Alert border color="red" dismissible>
             <InfoCircleSolid slot="icon" class="w-5 h-5"/>
             <span class="font-medium">Error!</span>
             {errorMessage}
@@ -118,7 +84,7 @@
 {/if}
 
 <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
-    {#if data.workspaces.length > 0}
+    {#if data.workspaces && data.workspaces.length > 0}
         {#each data.workspaces as workspace}
             <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-6 rounded-lg shadow-lg">
                 <h3 class="text-xl font-bold text-white">
@@ -131,7 +97,6 @@
                 </div>
             </div>
         {/each}
-
     {:else}
         <p class="text-gray-500">No workspaces available.</p>
     {/if}
