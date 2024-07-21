@@ -8,7 +8,6 @@
     let password = '';
     let error = '';
 
-
     async function login(event) {
         event.preventDefault();
         error = '';
@@ -38,7 +37,6 @@
         }
     }
 </script>
-
 
 <Section name="login">
     <Register href="#">

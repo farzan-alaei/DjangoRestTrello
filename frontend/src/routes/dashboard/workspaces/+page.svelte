@@ -1,43 +1,78 @@
 <script lang="ts">
-    /** @type {import('./$types').PageServerData} */
-    import {Button, Modal, Label, Input, Textarea} from 'flowbite-svelte';
+    import {Button, Modal, Label, Input, Textarea, Alert} from 'flowbite-svelte';
+    import {onMount} from 'svelte';
     import {page} from "$app/stores";
+    import {getAccessToken} from '../../../stores/authStore.js';
+    import {InfoCircleSolid} from "flowbite-svelte-icons";
 
     let formModal = false;
     let workspaceTitle = '';
     let workspaceDescription = '';
-    export let data;
+    let data = {workspaces: []};
+    let successMessage = '';
+    let errorMessage = '';
 
+    onMount(async () => {
+        try {
+            const accessToken = getAccessToken();
+            if (!accessToken) {
+                throw new Error('Access token not found');
+            }
+            const response = await fetch('http://127.0.0.1:8000/api/workspaces/', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            if (response.ok) {
+                const workspaces = await response.json();
+                data.workspaces = workspaces || [];
+            } else {
+                throw new Error('Failed to load workspaces');
+            }
+        } catch (error) {
+            console.error('Error loading workspaces:', error);
+            errorMessage = 'Failed to load workspaces. Please try again.';
+        }
+    });
 
     async function createWorkspace() {
+        successMessage = '';
+        errorMessage = '';
+
         try {
-            const response = await fetch('/dashboard/workspaces/', {
+            const accessToken = getAccessToken();
+            if (!accessToken) {
+                throw new Error('Access token not found');
+            }
+
+            const response = await fetch('http://127.0.0.1:8000/api/workspaces/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
                 },
-                body: JSON.stringify({title: workspaceTitle, description: workspaceDescription}),
+                body: JSON.stringify({title: workspaceTitle, description: workspaceDescription})
             });
 
             if (response.ok) {
                 const newWorkspace = await response.json();
                 data.workspaces = [...data.workspaces, newWorkspace];
-
-
                 formModal = false;
                 workspaceTitle = '';
                 workspaceDescription = '';
+                successMessage = 'Workspace created successfully!';
             } else {
-                console.error('Failed to create workspace');
+                throw new Error('Failed to create workspace');
             }
         } catch (error) {
             console.error('Error:', error);
+            errorMessage = 'Failed to create workspace. Please try again.';
         }
     }
 
     $: $page.url.pathname;
 </script>
-
 
 <div class="mt-4">
     <h1 class="text-3xl text-center font-bold dark:text-white">My Workspaces</h1>
@@ -62,6 +97,25 @@
     </form>
 </Modal>
 
+{#if successMessage}
+    <div class="mt-6">
+        <Alert border color="green" dismissible>
+            <InfoCircleSolid slot="icon" class="w-5 h-5"/>
+            <span class="font-medium">Success!</span>
+            {successMessage}
+        </Alert>
+    </div>
+{/if}
+
+{#if errorMessage}
+    <div class="m-6">
+        <Alert border color="red" dissmissible>
+            <InfoCircleSolid slot="icon" class="w-5 h-5"/>
+            <span class="font-medium">Error!</span>
+            {errorMessage}
+        </Alert>
+    </div>
+{/if}
 
 <div class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
     {#if data.workspaces.length > 0}
@@ -82,5 +136,3 @@
         <p class="text-gray-500">No workspaces available.</p>
     {/if}
 </div>
-
-

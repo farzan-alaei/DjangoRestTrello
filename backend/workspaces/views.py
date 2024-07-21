@@ -76,7 +76,12 @@ class WorkspacesMemberList(
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+        workspace = get_object_or_404(Workspace, id=self.kwargs["id"])
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(workspace=workspace)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class WorkspacesList(

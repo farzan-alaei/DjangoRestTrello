@@ -35,6 +35,9 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 
 class WorkspacesMembershipSerializer(serializers.ModelSerializer):
+    workspace = WorkspaceSerializer(read_only=True)
+    member = UserSerializer(many=True)
+
     class Meta:
         model = WorkspacesMembership
         fields = "__all__"

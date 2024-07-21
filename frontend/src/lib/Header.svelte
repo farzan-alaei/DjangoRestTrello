@@ -21,7 +21,7 @@
     async function logout() {
         const refreshToken = localStorage.getItem('refresh');
 
-        const response = await fetch('/logout', {
+        const response = await fetch('http://127.0.0.1:8000/api/auth/logout/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,8 +38,8 @@
             isLoggedIn.set(false);
             await goto('/');
         } else {
-            const errorData = await response.json();
-            console.error('Failed to logout:', errorData);
+            const errorText = await response.text();
+            console.log(errorText);
         }
     }
 
