@@ -43,4 +43,4 @@ class WorkspacesMembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkspacesMembership
-        fields = "__all__"
+        fields = ('workspace', 'member', 'access_level')
