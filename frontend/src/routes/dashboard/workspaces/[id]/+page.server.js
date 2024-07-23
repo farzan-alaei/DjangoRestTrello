@@ -9,22 +9,33 @@ export async function load({request, params}) {
     }, {});
     const accessToken = cookies?.access;
 
-
     if (!accessToken) {
         throw error(401, 'Access token not found');
     }
 
-    const response = await fetch(`http://backend:8000/api/workspaces/${params.id}/`, {
+    const workspaceResponse = await fetch(`http://backend:8000/api/workspaces/${params.id}/`, {
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
     });
 
-
-    if (response.ok) {
-        const workspace = await response.json();
-        return {workspace};
-    } else {
-        throw error(response.status, 'Failed to load workspace details');
+    if (!workspaceResponse.ok) {
+        throw error(workspaceResponse.status, 'Failed to load workspace details');
     }
+
+    const workspace = await workspaceResponse.json();
+
+    const membersResponse = await fetch(`http://backend:8000/api/workspaces/${params.id}/members/`, {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
+
+    if (!membersResponse.ok) {
+        throw error(membersResponse.status, 'Failed to load workspace members');
+    }
+
+    const members = await membersResponse.json();
+
+    return {workspace, members};
 }

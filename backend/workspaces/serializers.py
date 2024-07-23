@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from workspaces.models import WorkspacesMembership, Workspace
+
 from accounts.serializers import UserSerializer
+from workspaces.models import WorkspacesMembership, Workspace
 
 
 class MembershipSerializer(serializers.ModelSerializer):
@@ -13,7 +14,9 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 class WorkspaceSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
-    membership = MembershipSerializer(many=True, read_only=True)
+    membership = MembershipSerializer(
+        source="membership_set", many=True, read_only=True
+    )
 
     class Meta:
         model = Workspace
@@ -35,8 +38,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 
 class WorkspacesMembershipSerializer(serializers.ModelSerializer):
-    workspace = WorkspaceSerializer(read_only=True)
-    member = UserSerializer(many=True)
+    workspace = serializers.StringRelatedField(read_only=True)
+    member = UserSerializer(read_only=True)
 
     class Meta:
         model = WorkspacesMembership
