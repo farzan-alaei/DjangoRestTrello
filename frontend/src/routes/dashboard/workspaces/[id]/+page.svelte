@@ -196,21 +196,23 @@
     </Modal>
 {/if}
 
-<h2 class="mt-8 text-2xl font-semibold">Members</h2>
-<ul class="mt-4">
-    {#each members as member}
-        <li class="p-4 bg-white shadow-md rounded-lg mt-2">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h3 class="text-lg font-medium">{member.member.first_name} {member.member.last_name}</h3>
-                    <p class="text-sm text-gray-500">{member.member.email}</p>
-                    <p class="text-sm text-gray-500">{member.member.mobile}</p>
-                    <p class="text-sm text-gray-500">{member.access_level}</p>
+{#if members.length > 0}
+    <h2 class="mt-8 text-2xl font-semibold">Members</h2>
+    <ul class="mt-4 flex flex-wrap gap-4">
+        {#each members as member}
+            <li class="p-4 bg-gradient-to-r from-cyan-500 to-blue-500 shadow-md rounded-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+                <div class="flex flex-col justify-between h-full">
+                    <div>
+                        <h3 class="text-xl text-white font-medium mb-2">{member.member.first_name} {member.member.last_name}</h3>
+                        <p class="text-sm text-white">{member.member.email}</p>
+                        <p class="text-sm text-white">{member.member.mobile}</p>
+                        <p class="text-sm text-white">{member.access_level}</p>
+                    </div>
+                    {#if isAdminOrOwner({workspace, user}) && member.id !== workspace.owner.id}
+                        <Button color="red" class="mt-2">Remove</Button>
+                    {/if}
                 </div>
-                {#if isAdminOrOwner({workspace, user}) && member.id !== workspace.owner.id}
-                    <Button color="red">Remove</Button>
-                {/if}
-            </div>
-        </li>
-    {/each}
-</ul>
+            </li>
+        {/each}
+    </ul>
+{/if}
