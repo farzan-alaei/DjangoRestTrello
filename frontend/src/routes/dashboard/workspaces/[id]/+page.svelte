@@ -1,18 +1,17 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { goto, invalidate } from '$app/navigation';
-    import { Alert, Button, Input, Label, Modal, Select, Textarea } from 'flowbite-svelte';
-    import { InfoCircleSolid } from "flowbite-svelte-icons";
+    import {onMount} from 'svelte';
+    import {goto} from '$app/navigation';
+    import {Alert, Button, Input, Label, Modal, Select, Textarea} from 'flowbite-svelte';
+    import {InfoCircleSolid} from "flowbite-svelte-icons";
 
     /** @type {import('./$types').PageServerData} */
     export let data;
 
     let editMode = false;
-    let title = '';
-    let description = '';
     let successMessage = '';
     let errorMessage = '';
     let defaultModal = false;
+    let deleteMemberModal = false;
     let memberModal = false;
     let accessLevel = 'member';
     let newMemberEmail = '';
@@ -36,17 +35,16 @@
 
     let members = [];
 
-    // Define reactive statement to update `members` and `workspace`
     $: if (data) {
         if (data.workspace) {
             workspace = data.workspace;
-            title = workspace.title;
-            description = workspace.description;
         }
         if (data.members) {
             members = data.members;
         }
     }
+
+    console.log(data.members);
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -55,30 +53,34 @@
         }
     });
 
-    function isAdminOrOwner({ workspace, user }: { workspace: any, user: any }) {
+    function isAdminOrOwner({workspace, user}: { workspace: any, user: any }) {
         if (user.id === workspace.owner.id) return true;
         return workspace.membership && workspace.membership.some(
             membership => membership.member.id === user.id && membership.access_level === 'admin'
         );
     }
 
-    async function updateWorkspace() {
+    async function updateWorkspace(event) {
+        event.preventDefault();
         successMessage = '';
         errorMessage = '';
+
+        console.log('Updating workspace with:', {title: workspace.title, description: workspace.description});
 
         const response = await fetch(`/dashboard/workspaces/${data.workspace.id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, description })
+            body: JSON.stringify({title: workspace.title, description: workspace.description})
         });
+
+        console.log('Response status:', response.status);
 
         if (response.ok) {
             const updatedWorkspace = await response.json();
-            title = updatedWorkspace.title;
-            description = updatedWorkspace.description;
-            workspace = { ...updatedWorkspace };
+            console.log('Workspace updated:', updatedWorkspace);
+            workspace = {...updatedWorkspace};
             editMode = false;
             successMessage = 'Workspace updated successfully!';
         } else {
@@ -93,6 +95,8 @@
             method: 'DELETE'
         });
 
+        console.log('Response status:', response.status);
+
         if (response.ok) {
             successMessage = 'Workspace deleted successfully!';
             goto('/dashboard/workspaces');
@@ -103,10 +107,22 @@
         }
     }
 
+    async function deleteMember(membershipId) {
+        const response = await fetch(`/dashboard/workspaces/${workspace.id}/?membershipId=${membershipId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            successMessage = 'Member deleted successfully!';
+            members = members.filter(member => member.id !== membershipId);
+        } else {
+            const errorData = await response.json();
+            errorMessage = 'Failed to delete member. Please try again.';
+        }
+    }
+
     $: console.log(members); // Now `members` should be available and reactive
 </script>
-
-
 
 {#if successMessage}
     <div class="mt-6">
@@ -145,11 +161,11 @@
         <form on:submit={updateWorkspace}>
             <div class="mb-4">
                 <Label for="title" class="block text-sm font-medium text-gray-700">Title</Label>
-                <Input id="title" name="title" bind:value={title} type="text" required/>
+                <Input id="title" name="title" bind:value={workspace.title} type="text" required/>
             </div>
             <div class="mb-4">
                 <Label for="description" class="block text-sm font-medium text-gray-700">Description</Label>
-                <Textarea id="description" name="description" bind:value={description} required/>
+                <Textarea id="description" name="description" bind:value={workspace.description} required/>
             </div>
             <Button type="submit" class="w-full">Save</Button>
             <Button color="light" class="mt-2 w-full" on:click={() => (editMode = false)}>Cancel</Button>
@@ -209,10 +225,21 @@
                         <p class="text-sm text-white">{member.access_level}</p>
                     </div>
                     {#if isAdminOrOwner({workspace, user}) && member.id !== workspace.owner.id}
-                        <Button color="red" class="mt-2">Remove</Button>
+                        <Button color="red" class="mt-2" on:click={() => (deleteMemberModal = true)}>Remove</Button>
                     {/if}
                 </div>
             </li>
+            <Modal autoclose={true} bind:open={deleteMemberModal} size="md">
+                <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete member</h3>
+                <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete
+                    this member?
+                    This action cannot be undone.</p>
+                <div class="flex justify-end space-x-2">
+                    <Button on:click={() => deleteMember(member.id)}>Delete</Button>
+                    <Button color="light" on:click={() => (deleteMemberModal = false)}>Cancel</Button>
+                </div>
+            </Modal>
         {/each}
     </ul>
+
 {/if}

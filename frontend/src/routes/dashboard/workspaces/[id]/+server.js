@@ -33,7 +33,7 @@ export async function PUT({fetch, params, request}) {
 }
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
-export async function DELETE({fetch, params, request}) {
+export async function DELETE({fetch, params, url, request}) {
     const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
         const [name, value] = cookie.split('=').map(c => c.trim());
         cookies[name] = value;
@@ -45,7 +45,12 @@ export async function DELETE({fetch, params, request}) {
         return new Response('Access token not found', {status: 401});
     }
 
-    const response = await fetch(`http://backend:8000/api/workspaces/${params.id}/`, {
+    const membershipId = url.searchParams.get('membershipId');
+    const apiUrl = membershipId
+        ? `http://backend:8000/api/workspaces/members/${membershipId}/`
+        : `http://backend:8000/api/workspaces/${params.id}/`;
+
+    const response = await fetch(apiUrl, {
         method: 'DELETE',
         headers: {
             Authorization: `Bearer ${accessToken}`
@@ -54,8 +59,8 @@ export async function DELETE({fetch, params, request}) {
 
     if (!response.ok) {
         const errorData = await response.json();
-        return new Response(JSON.stringify(errorData), {status: response.status});
+        return new Response(JSON.stringify(errorData), { status: response.status });
     }
 
-    return new Response(null, {status: 204});
+    return new Response(null, { status: 204 });
 }

@@ -43,4 +43,4 @@ class WorkspacesMembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkspacesMembership
-        fields = ('workspace', 'member', 'access_level')
+        fields = ("id", "workspace", "member", "access_level")
