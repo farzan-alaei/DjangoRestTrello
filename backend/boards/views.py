@@ -1,4 +1,7 @@
+from django.db.models import Q
 from rest_framework import viewsets
+
+from boards.models import Board, List, Task, Comment, Label
 from boards.permissions import (
     IsOwnerOrReadOnlyInBoard,
     IsOwnerOrReadOnlyInList,
@@ -14,13 +17,14 @@ from .serializers import (
     CommentSerializer,
     LabelSerializer,
 )
-from boards.models import Board, List, Task, Comment, Label
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all()
     serializer_class = BoardSerializer
     permission_classes = [IsOwnerOrReadOnlyInBoard, IsMemberBoardOrNot]
+
+    def get_queryset(self):
+        return Board.objects.filter(Q(workspace__member=self.request.user) | Q(owner=self.request.user)).distinct()
 
 
 class ListViewSet(viewsets.ModelViewSet):
