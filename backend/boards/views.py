@@ -10,6 +10,7 @@ from boards.permissions import (
     IsMemberBoardOrNot,
     IsMemberOfTheTask,
 )
+from workspaces.models import Workspace
 from .serializers import (
     BoardSerializer,
     ListSerializer,
@@ -24,7 +25,14 @@ class BoardViewSet(viewsets.ModelViewSet):
     permission_classes = [IsOwnerOrReadOnlyInBoard, IsMemberBoardOrNot]
 
     def get_queryset(self):
-        return Board.objects.filter(Q(workspace__member=self.request.user) | Q(owner=self.request.user)).distinct()
+        return Board.objects.filter(
+            Q(workspace__member=self.request.user) | Q(owner=self.request.user)
+        ).distinct()
+
+    def perform_create(self, serializer):
+        workspace_data = self.request.data.get('workspace')
+        workspace = Workspace.objects.get(id=workspace_data['id'])
+        serializer.save(owner=self.request.user, workspace=workspace)
 
 
 class ListViewSet(viewsets.ModelViewSet):

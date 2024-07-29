@@ -1,11 +1,22 @@
 from rest_framework import serializers
+
+from workspaces.models import Workspace
 from .models import Board, List, Task, Comment, Label
 
 
+class WorkspaceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Workspace
+        fields = ["id", "title"]
+
+
 class BoardSerializer(serializers.ModelSerializer):
+    workspace = WorkspaceSerializer(read_only=True)
+
     class Meta:
         model = Board
-        fields = "__all__"
+        fields = ["id", "title", "workspace", "description"]
 
 
 class ListSerializer(serializers.ModelSerializer):

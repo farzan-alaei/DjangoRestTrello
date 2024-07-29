@@ -1,6 +1,5 @@
 import {error} from '@sveltejs/kit';
 
-
 /** @type {import('./$types').PageServerLoad} */
 export async function load({request}) {
     const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
@@ -15,20 +14,34 @@ export async function load({request}) {
     }
 
     try {
-        const response = await fetch('http://backend:8000/api/boards/board/', {
+        const boardsResponse = await fetch('http://backend:8000/api/boards/board/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
         });
 
-        if (response.ok) {
-            const boards = await response.json();
-            return {boards: boards || []};
+        const workspacesResponse = await fetch('http://backend:8000/api/workspaces/', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (boardsResponse.ok && workspacesResponse.ok) {
+            const boards = await boardsResponse.json();
+            const workspaces = await workspacesResponse.json();
+            return {
+                boards: boards || [],
+                workspaces: workspaces || []
+            };
         } else {
-            throw new Error('Failed to load boards');
+            throw new Error('Failed to load boards or workspaces');
         }
     } catch (error) {
-        console.error('Error loading boards:', error);
-        return {boards: [], errorMessage: 'Failed to load boards. Please try again.'};
+        console.error('Error loading boards or workspaces:', error);
+        return {
+            boards: [],
+            workspaces: [],
+            errorMessage: 'Failed to load boards and workspaces. Please try again.'
+        };
     }
 }
