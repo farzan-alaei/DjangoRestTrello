@@ -47,7 +47,7 @@
             <form class="flex flex-col space-y-6" on:submit={login}>
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Login</h3>
                 <Label class="space-y-2">
-                    <span>Your email</span>
+                    <span>Your email or mobile</span>
                     <Input type="text" bind:value={email_or_mobile} placeholder="email@examle.com | 09121234567"
                            required/>
                 </Label>

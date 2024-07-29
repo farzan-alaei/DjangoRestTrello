@@ -44,7 +44,6 @@
         }
     }
 
-    console.log(data.members);
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -65,7 +64,6 @@
         successMessage = '';
         errorMessage = '';
 
-        console.log('Updating workspace with:', {title: workspace.title, description: workspace.description});
 
         const response = await fetch(`/dashboard/workspaces/${data.workspace.id}/`, {
             method: 'PUT',
@@ -75,17 +73,14 @@
             body: JSON.stringify({title: workspace.title, description: workspace.description})
         });
 
-        console.log('Response status:', response.status);
 
         if (response.ok) {
             const updatedWorkspace = await response.json();
-            console.log('Workspace updated:', updatedWorkspace);
             workspace = {...updatedWorkspace};
             editMode = false;
             successMessage = 'Workspace updated successfully!';
         } else {
             const errorData = await response.json();
-            console.error('Failed to update workspace:', errorData);
             errorMessage = 'Failed to update workspace. Please try again.';
         }
     }
@@ -95,14 +90,12 @@
             method: 'DELETE'
         });
 
-        console.log('Response status:', response.status);
 
         if (response.ok) {
             successMessage = 'Workspace deleted successfully!';
             goto('/dashboard/workspaces');
         } else {
             const errorData = await response.json();
-            console.error('Failed to delete workspace:', errorData);
             errorMessage = 'Failed to delete workspace. Please try again.';
         }
     }
@@ -121,7 +114,6 @@
         }
     }
 
-    $: console.log(members); // Now `members` should be available and reactive
 </script>
 
 {#if successMessage}

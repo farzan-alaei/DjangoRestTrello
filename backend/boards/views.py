@@ -36,9 +36,18 @@ class BoardViewSet(viewsets.ModelViewSet):
 
 
 class ListViewSet(viewsets.ModelViewSet):
-    queryset = List.objects.all()
     serializer_class = ListSerializer
     permission_classes = [IsOwnerOrReadOnlyInList]
+
+    def get_queryset(self):
+        board_id = self.request.query_params.get('board_id')
+        if board_id:
+            return List.objects.filter(
+                Q(board__workspace__member=self.request.user) | Q(board__owner=self.request.user),
+                board_id=board_id
+            ).distinct()
+        else:
+            return List.objects.none()
 
 
 class TaskViewSet(viewsets.ModelViewSet):

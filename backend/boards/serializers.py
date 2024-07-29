@@ -5,7 +5,6 @@ from .models import Board, List, Task, Comment, Label
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Workspace
         fields = ["id", "title"]
@@ -20,9 +19,11 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class ListSerializer(serializers.ModelSerializer):
+    board = BoardSerializer(read_only=True)
+
     class Meta:
         model = List
-        fields = "__all__"
+        fields = ["id", "title", "board", "order"]
 
 
 class TaskSerializer(serializers.ModelSerializer):
