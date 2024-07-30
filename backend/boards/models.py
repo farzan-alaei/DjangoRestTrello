@@ -127,9 +127,7 @@ class Task(BaseModel, TimeStampMixin, SoftDeleteModel):
         blank=True,
         null=True,
     )
-    labels = models.ManyToManyField(
-        "Label", related_name="tasks", verbose_name=_("Labels")
-    )
+
 
     def get_comments(self):
         return self.comments.all()
