@@ -1,8 +1,8 @@
 <script lang="ts">
-    import {onMount} from 'svelte';
     import {goto} from '$app/navigation';
-    import {Alert, Button, Input, Label, Modal, Select, Textarea} from 'flowbite-svelte';
-    import {InfoCircleSolid} from "flowbite-svelte-icons";
+    import {Button, Input, Label, Modal, Textarea} from 'flowbite-svelte';
+    import {dndzone} from 'svelte-dnd-action';
+    import {onMount} from "svelte";
 
     /** @type {import('./$types').PageServerData} */
     export let data;
@@ -11,24 +11,94 @@
     let defaultModal = false;
     let board = data.board;
     let lists = data.lists;
-    console.log(lists)
+    let successMessage = '';
+    let errorMessage = '';
+    let user = {
+        id: '',
+        email: '',
+        mobile: ''
+    };
+
+
+    onMount(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            user = JSON.parse(userData);
+        }
+    });
+
+
+    function isAdminOrOwner({board, user}: { board: any, user: any }) {
+        if (user.id === board.owner) return true;
+    }
+
+    let dndLists = lists.map(lists => ({...lists, items: lists.tasks}));
+
+
+
+    function handleDndEvent(event) {
+        const {items} = event.detail;
+        dndLists = items;
+        console.log('Dnd Event:', items);
+    }
+
+    async function deleteBoard() {
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                successMessage = 'Board deleted successfully!';
+                goto('/dashboard/boards');
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to delete board. Please try again.';
+                console.error('Failed to delete board:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
 </script>
+
+<style>
+    .list-container {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .list {
+        margin: 0 1rem;
+        background-color: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        min-width: 200px;
+    }
+
+    .task {
+        background-color: #f0f0f0;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+    }
+</style>
 
 <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-6 rounded-lg shadow-lg">
     <h1 class="text-3xl font-bold text-white">{board.title}</h1>
     <p class="text-md text-white mt-4">{board.description}</p>
-
-
+    {#if isAdminOrOwner({board, user})}
         <div class="mt-4 flex space-x-4">
             <Button class="flex" on:click={() => (editMode = true)}>Edit</Button>
-            <Button color="red" class="flex" on:click={() => (defaultModal = true)}>Delete</Button>
+            <Button class="flex" color="red" on:click={() => (defaultModal = true)}>Delete</Button>
         </div>
-
+    {/if}
 </div>
 
 {#if editMode}
     <div class="mt-4 p-6 rounded-lg shadow-lg bg-white">
-        <form >
+        <form>
             <div class="mb-4">
                 <Label for="title" class="block text-sm font-medium text-gray-700">Title</Label>
                 <Input id="title" name="title" bind:value={board.title} type="text" required/>
@@ -43,11 +113,32 @@
     </div>
 {/if}
 
-{#if lists}
-    {#each lists as list}
-        <div class="mt-4 p-6 rounded-lg shadow-lg bg-white">
-            <h1 class="text-3xl font-bold text-gray-700">{list.title}</h1>
-            <p class="text-md text-gray-500 mt-4">{list.description}</p>
-        </div>
-    {/each}
+
+<Modal autoclose={false} bind:open={defaultModal} size="md">
+    <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete Board</h3>
+    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Board?
+        This action cannot be undone.</p>
+    <div class="flex justify-end space-x-2">
+        <Button on:click={deleteBoard}>Delete</Button>
+        <Button color="light" on:click={() => (defaultModal = false)}>Cancel</Button>
+    </div>
+</Modal>
+
+{#if dndLists.length > 0}
+    <div class="list-container">
+        {#each dndLists as list (list.id)}
+            <div class="list">
+                <h2 class="text-xl font-bold">{list.title}</h2>
+                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
+                     on:finalize={handleDndEvent}>
+                    {#each list.items as task (task.id)}
+                        <div class="task" data-id={task.id}>
+                            <h3 class="text-md font-medium">{task.title}</h3>
+                            <p class="text-sm">{task.description}</p>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        {/each}
+    </div>
 {/if}

@@ -60,5 +60,8 @@
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"svelte-dnd-action": "^0.9.49"
+	}
 }

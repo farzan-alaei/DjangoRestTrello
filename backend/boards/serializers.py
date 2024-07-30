@@ -12,24 +12,17 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 class BoardSerializer(serializers.ModelSerializer):
     workspace = WorkspaceSerializer(read_only=True)
+    owner = serializers.ReadOnlyField(source="owner.id")
 
     class Meta:
         model = Board
-        fields = ["id", "title", "workspace", "description"]
-
-
-class ListSerializer(serializers.ModelSerializer):
-    board = BoardSerializer(read_only=True)
-
-    class Meta:
-        model = List
-        fields = ["id", "title", "board", "order"]
+        fields = ["id", "title", "workspace", "description", "owner"]
 
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = "__all__"
+        fields = ["id", "title", "description", "order"]
 
     def validate(self, data):
         start_date = data.get("start_date")
@@ -45,6 +38,15 @@ class TaskSerializer(serializers.ModelSerializer):
                 "The start time and the deadline should not be equal"
             )
         return data
+
+
+class ListSerializer(serializers.ModelSerializer):
+    board = BoardSerializer(read_only=True)
+    tasks = TaskSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = List
+        fields = ["id", "title", "board", "order", "tasks"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
