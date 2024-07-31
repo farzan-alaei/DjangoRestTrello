@@ -46,9 +46,9 @@ export async function DELETE({fetch, params, url, request}) {
         return new Response('Access token not found', {status: 401});
     }
 
-    const boardId = url.searchParams.get('boardId');
-    const apiUrl = boardId
-        ? `http://backend:8000/api/boards/board/${boardId}/`
+    const listId = url.searchParams.get('listId');
+    const apiUrl = listId
+        ? `http://backend:8000/api/boards/list/${listId}/?board_id=${params.id}`
         : `http://backend:8000/api/boards/board/${params.id}/`;
 
     const response = await fetch(apiUrl, {

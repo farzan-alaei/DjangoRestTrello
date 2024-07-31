@@ -121,6 +121,28 @@
     }
 
 
+    async function deleteList(listId) {
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/?listId=${listId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                successMessage = 'List deleted successfully!';
+                lists = lists.filter(list => list.id !== listId);
+                dndLists = lists.map(list => ({...list, items: list.tasks}));
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to delete list. Please try again.';
+                console.error('Failed to delete list:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
+
+
 </script>
 
 <style>
@@ -225,6 +247,9 @@
                 <h2 class="text-xl font-bold">{list.title}</h2>
                 <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
                      on:finalize={handleDndEvent}>
+                    <div class="flex justify-end space-x-2">
+                        <Button on:click={() => deleteList(list.id)}>Delete</Button>
+                    </div>
                     {#each list.items as task (task.id)}
                         <div class="task" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
