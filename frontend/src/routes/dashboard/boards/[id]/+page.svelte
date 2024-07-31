@@ -1,6 +1,7 @@
 <script lang="ts">
     import {goto} from '$app/navigation';
-    import {Button, Input, Label, Modal, Textarea} from 'flowbite-svelte';
+    import {Button, Input, Label, Modal, Textarea, Alert} from 'flowbite-svelte';
+    import {InfoCircleSolid} from "flowbite-svelte-icons";
     import {dndzone} from 'svelte-dnd-action';
     import {onMount} from "svelte";
 
@@ -35,7 +36,6 @@
     let dndLists = lists.map(lists => ({...lists, items: lists.tasks}));
 
 
-
     function handleDndEvent(event) {
         const {items} = event.detail;
         dndLists = items;
@@ -59,6 +59,31 @@
         } catch (error) {
             errorMessage = 'An error occurred. Please try again.';
             console.error('Error:', error);
+        }
+    }
+
+
+    async function updateBoard(event) {
+        event.preventDefault();
+        successMessage = '';
+        errorMessage = '';
+
+        const response = await fetch(`/dashboard/boards/${board.id}/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({title: board.title, description: board.description})
+        });
+
+        if (response.ok) {
+            const updatedBoard = await response.json();
+            board = {...updatedBoard};
+            editMode = false;
+            successMessage = 'Board updated successfully!';
+        } else {
+            const errorData = await response.json();
+            errorMessage = 'Failed to update board. Please try again.';
         }
     }
 </script>
@@ -85,6 +110,27 @@
     }
 </style>
 
+{#if successMessage}
+    <div class="mt-6">
+        <Alert border color="green" dismissible>
+            <InfoCircleSolid slot="icon" class="w-5 h-5"/>
+            <span class="font-medium">Success!</span>
+            {successMessage}
+        </Alert>
+    </div>
+{/if}
+
+{#if errorMessage}
+    <div class="mt-6">
+        <Alert border color="red" dismissible>
+            <InfoCircleSolid slot="icon" class="w-5 h-5"/>
+            <span class="font-medium">Error!</span>
+            {errorMessage}
+        </Alert>
+    </div>
+{/if}
+
+
 <div class="bg-gradient-to-r from-cyan-500 to-blue-500 p-6 rounded-lg shadow-lg">
     <h1 class="text-3xl font-bold text-white">{board.title}</h1>
     <p class="text-md text-white mt-4">{board.description}</p>
@@ -98,7 +144,7 @@
 
 {#if editMode}
     <div class="mt-4 p-6 rounded-lg shadow-lg bg-white">
-        <form>
+        <form on:submit={updateBoard}>
             <div class="mb-4">
                 <Label for="title" class="block text-sm font-medium text-gray-700">Title</Label>
                 <Input id="title" name="title" bind:value={board.title} type="text" required/>
