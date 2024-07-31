@@ -49,6 +49,11 @@ class ListViewSet(viewsets.ModelViewSet):
         else:
             return List.objects.none()
 
+    def perform_create(self, serializer):
+        board_id = self.request.data.get('board')
+        board = Board.objects.get(id=board_id)
+        serializer.save(board=board)
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
