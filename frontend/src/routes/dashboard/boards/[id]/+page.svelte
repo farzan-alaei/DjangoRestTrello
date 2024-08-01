@@ -11,17 +11,20 @@
     let defaultModal = false;
     let createListModal = false;
     let deleteListModal = false;
+    let addTaskModal = false;
     let board = data.board;
     let lists = data.lists;
     let successMessage = '';
     let errorMessage = '';
     let newListTitle = '';
+    let newTaskTitle = '';
     let user = {
         id: '',
         email: '',
         mobile: ''
     };
-    let listToDelete = null; // Track which list to delete
+    let listToDelete = null;
+    let taskListId = null;
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -139,12 +142,48 @@
             console.error('Error:', error);
         }
     }
+
+    async function addTask(event) {
+        event.preventDefault();
+        successMessage = '';
+        errorMessage = '';
+
+
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/?taskListId=${taskListId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({title: taskTitle, list: taskListId})
+            });
+
+            if (response.ok) {
+                const newTask = await response.json();
+                lists = lists.map(list => {
+                    if (list.id === taskListId) {
+                        return {...list, tasks: [...list.tasks, newTask]};
+                    } else {
+                        return list;
+                    }
+                });
+                dndLists = lists.map(list => ({...list, items: list.tasks}));
+                addTaskModal = false;
+                taskTitle = '';
+                successMessage = 'Task added successfully!';
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to add task. Please try again.';
+                console.error('Failed to add task:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
+
 </script>
 
-<style>
-
-
-</style>
 
 {#if successMessage}
     <div class="mt-6">
@@ -197,24 +236,23 @@
 
 <Modal autoclose={false} bind:open={defaultModal} size="md">
     <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete Board</h3>
-    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Board? This action cannot be undone.</p>
+    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Board?
+        This action cannot be undone.</p>
     <div class="flex justify-end space-x-2">
         <Button on:click={deleteBoard}>Delete</Button>
         <Button color="light" on:click={() => (defaultModal = false)}>Cancel</Button>
     </div>
 </Modal>
 
-<Modal autoclose={false} bind:open={createListModal} size="md">
-    <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Create New List</h3>
-    <form on:submit={createList}>
-        <div class="mb-4">
-            <Label class="block text-sm font-medium text-gray-700" for="newListTitle">Title</Label>
-            <Input bind:value={newListTitle} id="newListTitle" name="title" required type="text"/>
-        </div>
-        <div class="flex justify-end space-x-2">
-            <Button type="submit">Create</Button>
-            <Button color="light" on:click={() => (createListModal = false)}>Cancel</Button>
-        </div>
+
+<Modal autoclose={false} bind:open={createListModal} class="w-full" size="xs">
+    <form class="flex flex-col space-y-6" on:submit={createList}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Create a New Task</h3>
+        <Label class="space-y-2">
+            <span>Title</span>
+            <Input bind:value={newListTitle} class="border" name="title" placeholder="Title" required type="text"/>
+        </Label>
+        <Button class="w-full" type="submit">Create</Button>
     </form>
 </Modal>
 
@@ -222,10 +260,17 @@
     <div class="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {#each dndLists as list, index (list.id)}
             <div class="p-4 rounded-lg shadow-lg bg-gray-200 flex-shrink-0 relative">
-                <Button class="absolute top-0 right-0 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300"
-                        on:click={() => { listToDelete = list.id; deleteListModal = true; }}>×</Button>
+                <Button class="absolute top-0 right-0 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300
+                 dark:bg-gray-200 dark:hover:bg-gray-300"
+                        on:click={() => { listToDelete = list.id; deleteListModal = true; }}>×
+                </Button>
+                <Button class="absolute top-0 right-12 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300
+                 dark:bg-gray-200 dark:hover:bg-gray-300"
+                        on:click={() => { taskListId = list.id; addTaskModal = true; }}>+
+                </Button>
                 <h2 class="text-xl font-bold mb-2">{list.title}</h2>
-                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent} on:finalize={handleDndEvent}>
+                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
+                     on:finalize={handleDndEvent}>
                     {#each list.items as task (task.id)}
                         <div class="task bg-gray-100 mb-2 p-2 rounded-md" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
@@ -239,10 +284,27 @@
 {/if}
 
 <Modal autoclose={false} bind:open={deleteListModal} size="md">
-    <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete List</h3>
-    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this List? This action cannot be undone.</p>
-    <div class="flex justify-end space-x-2">
-        <Button on:click={() => deleteList(listToDelete)}>Delete</Button>
-        <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
-    </div>
+    <form on:submit|preventDefault={deleteList}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Delete List</h3>
+        <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this List?
+            This
+            action cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <Button on:click={() => deleteList(listToDelete)}>Delete</Button>
+            <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
+        </div>
+    </form>
 </Modal>
+
+<Modal autoclose={false} bind:open={addTaskModal} class="w-full" size="xs">
+    <form class="flex flex-col space-y-6" on:submit={addTask}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Create a New Task</h3>
+        <Label class="space-y-2">
+            <span>Title</span>
+            <Input bind:value={newTaskTitle} class="border" name="title" placeholder="Title" required type="text"/>
+        </Label>
+        <Button class="w-full" type="submit">Create</Button>
+    </form>
+</Modal>
+
+
