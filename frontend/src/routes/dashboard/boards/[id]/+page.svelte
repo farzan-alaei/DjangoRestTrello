@@ -10,6 +10,7 @@
     let editMode = false;
     let defaultModal = false;
     let createListModal = false;
+    let deleteListModal = false;
     let board = data.board;
     let lists = data.lists;
     let successMessage = '';
@@ -248,8 +249,18 @@
                 <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
                      on:finalize={handleDndEvent}>
                     <div class="flex justify-end space-x-2">
-                        <Button on:click={() => deleteList(list.id)}>Delete</Button>
+                        <Button on:click={() => (deleteListModal = true)}>Delete</Button>
                     </div>
+                    <Modal autoclose={true} bind:open={deleteListModal} size="md">
+                        <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete List</h3>
+                        <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to
+                            delete this List?
+                            This action cannot be undone.</p>
+                        <div class="flex justify-end space-x-2">
+                            <Button on:click={() => deleteList(list.id)}>Delete</Button>
+                            <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
+                        </div>
+                    </Modal>
                     {#each list.items as task (task.id)}
                         <div class="task" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
@@ -261,3 +272,4 @@
         {/each}
     </div>
 {/if}
+
