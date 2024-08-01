@@ -21,7 +21,7 @@
         email: '',
         mobile: ''
     };
-
+    let listToDelete = null; // Track which list to delete
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -30,13 +30,11 @@
         }
     });
 
-
     function isAdminOrOwner({board, user}: { board: any, user: any }) {
         if (user.id === board.owner) return true;
     }
 
     let dndLists = lists.map(lists => ({...lists, items: lists.tasks}));
-
 
     function handleDndEvent(event) {
         const {items} = event.detail;
@@ -63,7 +61,6 @@
             console.error('Error:', error);
         }
     }
-
 
     async function updateBoard(event) {
         event.preventDefault();
@@ -105,7 +102,7 @@
 
             if (response.ok) {
                 const newList = await response.json();
-                lists = [...lists, newList];
+                lists = [newList, ...lists];
                 dndLists = lists.map(list => ({...list, items: list.tasks}));
                 createListModal = false;
                 newListTitle = '';
@@ -121,7 +118,6 @@
         }
     }
 
-
     async function deleteList(listId) {
         try {
             const response = await fetch(`/dashboard/boards/${board.id}/?listId=${listId}`, {
@@ -132,6 +128,7 @@
                 successMessage = 'List deleted successfully!';
                 lists = lists.filter(list => list.id !== listId);
                 dndLists = lists.map(list => ({...list, items: list.tasks}));
+                deleteListModal = false;
             } else {
                 const errorData = await response.json();
                 errorMessage = 'Failed to delete list. Please try again.';
@@ -142,30 +139,11 @@
             console.error('Error:', error);
         }
     }
-
-
 </script>
 
 <style>
-    .list-container {
-        display: flex;
-        overflow-x: auto;
-    }
 
-    .list {
-        margin: 0 1rem;
-        background-color: white;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        min-width: 200px;
-    }
 
-    .task {
-        background-color: #f0f0f0;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-    }
 </style>
 
 {#if successMessage}
@@ -219,8 +197,7 @@
 
 <Modal autoclose={false} bind:open={defaultModal} size="md">
     <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete Board</h3>
-    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Board?
-        This action cannot be undone.</p>
+    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Board? This action cannot be undone.</p>
     <div class="flex justify-end space-x-2">
         <Button on:click={deleteBoard}>Delete</Button>
         <Button color="light" on:click={() => (defaultModal = false)}>Cancel</Button>
@@ -242,27 +219,15 @@
 </Modal>
 
 {#if dndLists.length > 0}
-    <div class="list-container">
-        {#each dndLists as list (list.id)}
-            <div class="list">
-                <h2 class="text-xl font-bold">{list.title}</h2>
-                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
-                     on:finalize={handleDndEvent}>
-                    <div class="flex justify-end space-x-2">
-                        <Button on:click={() => (deleteListModal = true)}>Delete</Button>
-                    </div>
-                    <Modal autoclose={true} bind:open={deleteListModal} size="md">
-                        <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete List</h3>
-                        <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to
-                            delete this List?
-                            This action cannot be undone.</p>
-                        <div class="flex justify-end space-x-2">
-                            <Button on:click={() => deleteList(list.id)}>Delete</Button>
-                            <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
-                        </div>
-                    </Modal>
+    <div class="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {#each dndLists as list, index (list.id)}
+            <div class="p-4 rounded-lg shadow-lg bg-gray-200 flex-shrink-0 relative">
+                <Button class="absolute top-0 right-0 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300"
+                        on:click={() => { listToDelete = list.id; deleteListModal = true; }}>×</Button>
+                <h2 class="text-xl font-bold mb-2">{list.title}</h2>
+                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent} on:finalize={handleDndEvent}>
                     {#each list.items as task (task.id)}
-                        <div class="task" data-id={task.id}>
+                        <div class="task bg-gray-100 mb-2 p-2 rounded-md" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
                             <p class="text-sm">{task.description}</p>
                         </div>
@@ -273,3 +238,11 @@
     </div>
 {/if}
 
+<Modal autoclose={false} bind:open={deleteListModal} size="md">
+    <h3 class="mb-4 text-lg font-medium text-gray-900 dark:text-white">Delete List</h3>
+    <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this List? This action cannot be undone.</p>
+    <div class="flex justify-end space-x-2">
+        <Button on:click={() => deleteList(listToDelete)}>Delete</Button>
+        <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
+    </div>
+</Modal>
