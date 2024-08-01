@@ -12,6 +12,7 @@
     let createListModal = false;
     let deleteListModal = false;
     let addTaskModal = false;
+    let editListModal = false;  // New state for edit list modal
     let board = data.board;
     let lists = data.lists;
     let successMessage = '';
@@ -25,6 +26,8 @@
     };
     let listToDelete = null;
     let taskListId = null;
+    let editingList = null;  // New state for the list being edited
+    let updatedListTitle = '';  // New state for the updated list title
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -182,6 +185,40 @@
         }
     }
 
+    async function updateList(event) {
+        event.preventDefault();
+        successMessage = '';
+        errorMessage = '';
+
+        if (!editingList) return;
+
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/?listId=${editingList.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({title: updatedListTitle})
+            });
+
+            if (response.ok) {
+                const updatedList = await response.json();
+                lists = lists.map(list => list.id === editingList.id ? updatedList : list);
+                dndLists = lists.map(list => ({...list, items: list.tasks}));
+                editListModal = false;
+                editingList = null;
+                updatedListTitle = '';
+                successMessage = 'List updated successfully!';
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to update list. Please try again.';
+                console.error('Failed to update list:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
 </script>
 
 
@@ -258,7 +295,7 @@
 
 {#if dndLists.length > 0}
     <div class="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {#each dndLists as list, index (list.id)}
+        {#each dndLists as list (list.id)}
             <div class="p-4 rounded-lg shadow-lg bg-gray-200 flex-shrink-0 relative">
                 <Button class="absolute top-0 right-0 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300
                  dark:bg-gray-200 dark:hover:bg-gray-300"
@@ -268,7 +305,11 @@
                  dark:bg-gray-200 dark:hover:bg-gray-300"
                         on:click={() => { taskListId = list.id; addTaskModal = true; }}>+
                 </Button>
-                <h2 class="text-xl font-bold mb-2">{list.title}</h2>
+                <Button class="text-lg text-gray-700 font-bold mb-2 cursor-pointer bg-gray-200 hover:bg-gray-300
+                 dark:bg-gray-200 dark:hover:bg-gray-300"
+                        on:click={() => { editingList = list; updatedListTitle = list.title; editListModal = true; }}>
+                    {list.title}
+                </Button>
                 <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
                      on:finalize={handleDndEvent}>
                     {#each list.items as task (task.id)}
@@ -304,7 +345,17 @@
             <Input bind:value={newTaskTitle} class="border" name="title" placeholder="Title" required type="text"/>
         </Label>
         <Button class="w-full" type="submit">Create</Button>
+        <Button color="light" on:click={() => (addTaskModal = false)}>Cancel</Button>
     </form>
 </Modal>
 
 
+<Modal autoclose={false} bind:open={editListModal} size="md">
+    <form class="flex flex-col space-y-6" on:submit|preventDefault={updateList}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Edit List</h3>
+        <Label class="space-y-2">Title</Label>
+        <Input bind:value={updatedListTitle} class="border" name="title" required type="text"/>
+        <Button type="submit">Update</Button>
+        <Button color="light" on:click={() => (editListModal = false)}>Cancel</Button>
+    </form>
+</Modal>

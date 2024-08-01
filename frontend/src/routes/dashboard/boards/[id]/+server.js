@@ -1,8 +1,8 @@
 import {json} from '@sveltejs/kit';
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
-export async function PUT({fetch, params, request}) {
-    const boardData = await request.json();
+export async function PUT({fetch, params, request, url}) {
+    const requestData = await request.json();
     const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
         const [name, value] = cookie.split('=').map(c => c.trim());
         cookies[name] = value;
@@ -14,13 +14,18 @@ export async function PUT({fetch, params, request}) {
         return new Response('Access token not found', {status: 401});
     }
 
-    const response = await fetch(`http://backend:8000/api/boards/board/${params.id}/`, {
+    const listId = url.searchParams.get('listId');
+    const apiUrl = listId
+        ? `http://backend:8000/api/boards/list/${listId}/?board_id=${params.id}`
+        : `http://backend:8000/api/boards/board/${params.id}/`;
+
+    const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
         },
-        body: JSON.stringify(boardData)
+        body: JSON.stringify(requestData)
     });
 
     if (!response.ok) {
@@ -28,8 +33,8 @@ export async function PUT({fetch, params, request}) {
         return new Response(JSON.stringify(errorData), {status: response.status});
     }
 
-    const updatedBoard = await response.json();
-    return json(updatedBoard, {status: 200});
+    const updatedData = await response.json();
+    return json(updatedData, {status: 200});
 }
 
 
