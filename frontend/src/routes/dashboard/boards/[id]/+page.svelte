@@ -29,9 +29,10 @@
     let listToDelete = null;
     let taskListId = null;
     let taskId = null;
-    let editingList = null;// New state for the list being edited
-    let updatedListTitle = '';  // New state for the updated list title
+    let editingList = null;
+    let updatedListTitle = '';
     let updatedTaskTitle = '';
+    let isHandlingDnd = false;
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -46,11 +47,30 @@
 
     let dndLists = lists.map(lists => ({...lists, items: lists.tasks}));
 
-    function handleDndEvent(event, listId) {
+    async function handleDndEvent(event, listId) {
+
         const {items} = event.detail;
         lists = lists.map(list => list.id === listId ? {...list, tasks: items} : list);
         dndLists = lists.map(list => ({...list, items: list.tasks}));
         console.log('Dnd Event:', items);
+
+        for (const item of items) {
+            await saveTaskOrder(listId, item.id);
+        }
+
+    }
+
+    async function saveTaskOrder(listId, taskId) {
+        const response = await fetch(`/dashboard/boards/${board.id}/?listId=${listId}&taskId=${taskId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            console.error('Error saving task order');
+        }
     }
 
     async function deleteBoard() {
@@ -303,6 +323,7 @@
         }
     }
 
+
 </script>
 
 
@@ -486,6 +507,7 @@
     .task-list {
         min-height: 100px;
     }
+
     .task {
         cursor: grab;
     }

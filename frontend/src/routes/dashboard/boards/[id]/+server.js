@@ -130,3 +130,37 @@ export async function POST({params, request, url}) {
         return json({error: 'Internal Server Error'}, {status: 500});
     }
 }
+
+
+/** @type {import('@sveltejs/kit').RequestHandler} */
+export async function PATCH({request, url}) {
+    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
+        const [name, value] = cookie.split('=').map(c => c.trim());
+        cookies[name] = value;
+        return cookies;
+    }, {});
+    const accessToken = cookies?.access;
+
+    if (!accessToken) {
+        return json({error: 'Access token not found'}, {status: 401});
+    }
+
+    const listId = url.searchParams.get('listId');
+    const taskId = url.searchParams.get('taskId');
+
+    const response = await fetch(`http://backend:8000/api/boards/task/${taskId}/?list_id=${listId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        return new Response(JSON.stringify(errorData), {status: response.status});
+    }
+
+    const data = await response.json();
+    return json(data, {status: 200});
+}

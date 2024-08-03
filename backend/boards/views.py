@@ -69,6 +69,20 @@ class TaskViewSet(viewsets.ModelViewSet):
         else:
             raise serializers.ValidationError("list_id parameter is required.")
 
+    def partial_update(self, request, *args, **kwargs):
+        task = self.get_object()
+        list_id = self.request.query_params.get("list_id")
+        if list_id:
+            try:
+                list_instance = List.objects.get(id=list_id)
+                task.board_list = list_instance
+                task.save()
+                return super().partial_update(request, *args, **kwargs)
+            except List.DoesNotExist:
+                raise serializers.ValidationError("List not found.")
+        else:
+            raise serializers.ValidationError("list_id parameter is required.")
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
