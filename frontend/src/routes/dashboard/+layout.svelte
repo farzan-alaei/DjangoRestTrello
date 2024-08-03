@@ -31,13 +31,6 @@
                                  group-hover:text-gray-900 dark:group-hover:text-white"/>
                     </svelte:fragment>
                 </SidebarItem>
-                <SidebarItem href="/dashboard/members" label="Members">
-                    <svelte:fragment slot="icon">
-                        <UsersGroupSolid
-                                class="w-6 h-6 text-primary-700 transition duration-75 dark:text-primary-700
-                                group-hover:text-gray-900 dark:group-hover:text-white"/>
-                    </svelte:fragment>
-                </SidebarItem>
             </SidebarGroup>
         </SidebarWrapper>
     </Sidebar>
