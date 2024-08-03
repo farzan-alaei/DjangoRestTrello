@@ -46,9 +46,10 @@
 
     let dndLists = lists.map(lists => ({...lists, items: lists.tasks}));
 
-    function handleDndEvent(event) {
+    function handleDndEvent(event, listId) {
         const {items} = event.detail;
-        dndLists = items;
+        lists = lists.map(list => list.id === listId ? {...list, tasks: items} : list);
+        dndLists = lists.map(list => ({...list, items: list.tasks}));
         console.log('Dnd Event:', items);
     }
 
@@ -378,7 +379,7 @@
 
 {#if dndLists.length > 0}
     <div class="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {#each dndLists as list (list.id)}
+        {#each dndLists as list}
             <div class="p-4 rounded-lg shadow-lg bg-gray-200 flex-shrink-0 relative">
                 <Button class="absolute top-0 right-0 m-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300
                  dark:bg-gray-200 dark:hover:bg-gray-300"
@@ -393,8 +394,10 @@
                         on:click={() => { editingList = list; updatedListTitle = list.title; editListModal = true; }}>
                     {list.title}
                 </Button>
-                <div use:dndzone={{items: list.items, flipDurationMs: 300}} on:consider={handleDndEvent}
-                     on:finalize={handleDndEvent}>
+                <div class="task-list"
+                     use:dndzone={{items: list.items, flipDurationMs: 0}}
+                     on:consider={event => handleDndEvent(event,list.id)}
+                     on:finalize={event => handleDndEvent(event, list.id)}>
                     {#each list.items as task (task.id)}
                         <div class="task bg-gray-100 mb-2 p-2 rounded-md" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
@@ -478,3 +481,12 @@
         <Button color="light" on:click={() => (editTaskModal = false)}>Cancel</Button>
     </form>
 </Modal>
+
+<style>
+    .task-list {
+        min-height: 100px;
+    }
+    .task {
+        cursor: grab;
+    }
+</style>
