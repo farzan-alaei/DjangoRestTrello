@@ -13,6 +13,8 @@
     let deleteListModal = false;
     let addTaskModal = false;
     let editListModal = false;  // New state for edit list modal
+    let editTaskModal = false;  // New state for edit task modal
+    let deleteTaskModal = false;
     let board = data.board;
     let lists = data.lists;
     let successMessage = '';
@@ -26,8 +28,10 @@
     };
     let listToDelete = null;
     let taskListId = null;
-    let editingList = null;  // New state for the list being edited
+    let taskId = null;
+    let editingList = null;// New state for the list being edited
     let updatedListTitle = '';  // New state for the updated list title
+    let updatedTaskTitle = '';
 
     onMount(() => {
         const userData = localStorage.getItem('user');
@@ -151,14 +155,13 @@
         successMessage = '';
         errorMessage = '';
 
-
         try {
-            const response = await fetch(`/dashboard/boards/${board.id}/?taskListId=${taskListId}`, {
+            const response = await fetch(`/dashboard/boards/${board.id}/?list_id=${taskListId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({title: taskTitle, list: taskListId})
+                body: JSON.stringify({title: newTaskTitle})
             });
 
             if (response.ok) {
@@ -172,7 +175,7 @@
                 });
                 dndLists = lists.map(list => ({...list, items: list.tasks}));
                 addTaskModal = false;
-                taskTitle = '';
+                newTaskTitle = '';
                 successMessage = 'Task added successfully!';
             } else {
                 const errorData = await response.json();
@@ -184,6 +187,7 @@
             console.error('Error:', error);
         }
     }
+
 
     async function updateList(event) {
         event.preventDefault();
@@ -219,6 +223,85 @@
             console.error('Error:', error);
         }
     }
+
+
+    async function updateTask(event) {
+        event.preventDefault();
+        successMessage = '';
+        errorMessage = '';
+
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/?taskListId=${taskListId}&taskId=${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({title: updatedTaskTitle})
+            });
+
+
+            if (response.ok) {
+                const updatedTask = await response.json();
+                lists = lists.map(list => {
+                    if (list.id === taskListId) {
+                        return {
+                            ...list,
+                            tasks: list.tasks.map(task => task.id === updatedTask.id ? updatedTask : task)
+                        };
+                    } else {
+                        return list;
+                    }
+                });
+                dndLists = lists.map(list => ({...list, items: list.tasks}));
+                editTaskModal = false;
+                editingList = null;
+                updatedTaskTitle = '';
+                successMessage = 'Task updated successfully!';
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to update task. Please try again.';
+                console.error('Failed to update task:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
+
+
+    async function deleteTask(taskId) {
+        successMessage = '';
+        errorMessage = '';
+
+        try {
+            const response = await fetch(`/dashboard/boards/${board.id}/?taskId=${taskId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                lists = lists.map(list => {
+                    return {
+                        ...list,
+                        tasks: list.tasks.filter(task => task.id !== taskId)
+                    };
+                });
+                dndLists = lists.map(list => ({...list, items: list.tasks}));
+                deleteTaskModal = false;
+                successMessage = 'Task deleted successfully!';
+            } else {
+                const errorData = await response.json();
+                errorMessage = 'Failed to delete task. Please try again.';
+                console.error('Failed to delete task:', errorData);
+            }
+        } catch (error) {
+            errorMessage = 'An error occurred. Please try again.';
+            console.error('Error:', error);
+        }
+    }
+
 </script>
 
 
@@ -315,7 +398,18 @@
                     {#each list.items as task (task.id)}
                         <div class="task bg-gray-100 mb-2 p-2 rounded-md" data-id={task.id}>
                             <h3 class="text-md font-medium">{task.title}</h3>
-                            <p class="text-sm">{task.description}</p>
+
+                            <Button class="p-2 text-primary-400 cursor-pointer bg-gray-200 hover:bg-gray-300
+                             dark:bg-gray-200 dark:hover:bg-gray-300"
+                                    on:click={() => { taskListId = list.id; taskId = task.id;
+                                        updatedTaskTitle = task.title; editTaskModal = true; }}>
+                                Edit
+                            </Button>
+                            <Button class="p-2 text-red-500 cursor-pointer bg-gray-200 hover:bg-gray-300
+                             dark:bg-gray-200 dark:hover:bg-gray-300"
+                                    on:click={() => { taskId = task.id; deleteTaskModal = true; }}>×
+                            </Button>
+
                         </div>
                     {/each}
                 </div>
@@ -333,6 +427,19 @@
         <div class="flex justify-end space-x-2">
             <Button on:click={() => deleteList(listToDelete)}>Delete</Button>
             <Button color="light" on:click={() => (deleteListModal = false)}>Cancel</Button>
+        </div>
+    </form>
+</Modal>
+
+<Modal autoclose={false} bind:open={deleteTaskModal} size="md">
+    <form on:submit|preventDefault={deleteTask}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Delete Task</h3>
+        <p class="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this Task?
+            This
+            action cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <Button on:click={() => deleteTask(taskId)}>Delete</Button>
+            <Button color="light" on:click={() => (deleteTaskModal = false)}>Cancel</Button>
         </div>
     </form>
 </Modal>
@@ -357,5 +464,17 @@
         <Input bind:value={updatedListTitle} class="border" name="title" required type="text"/>
         <Button type="submit">Update</Button>
         <Button color="light" on:click={() => (editListModal = false)}>Cancel</Button>
+    </form>
+</Modal>
+
+<Modal autoclose={false} bind:open={editTaskModal} class="w-full" size="xs">
+    <form class="flex flex-col space-y-6" on:submit|preventDefault={updateTask}>
+        <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Update Task</h3>
+        <Label class="space-y-2">
+            <span>Title</span>
+            <Input bind:value={updatedTaskTitle} class="border" name="title" required type="text"/>
+        </Label>
+        <Button class="w-full" type="submit">Update</Button>
+        <Button color="light" on:click={() => (editTaskModal = false)}>Cancel</Button>
     </form>
 </Modal>
