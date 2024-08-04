@@ -22,6 +22,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         model = Workspace
         fields = ("id", "owner", "title", "description", "membership")
         read_only_fields = ("owner",)
+        ref_name = "WorkspaceSerializer"
 
     def create(self, validated_data):
         workspace = Workspace.objects.create(**validated_data)

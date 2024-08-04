@@ -8,6 +8,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workspace
         fields = ["id", "title"]
+        ref_name = "BoardWorkspaceSerializer"
 
 
 class BoardSerializer(serializers.ModelSerializer):
