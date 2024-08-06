@@ -5,6 +5,10 @@ from .models import Board, List, Task, Comment, Label
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Workspace model.
+    """
+
     class Meta:
         model = Workspace
         fields = ["id", "title"]
@@ -12,6 +16,10 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 
 class BoardSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Board model.
+    """
+
     workspace = WorkspaceSerializer(read_only=True)
     owner = serializers.ReadOnlyField(source="owner.id")
 
@@ -21,11 +29,18 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Task model.
+    """
+
     class Meta:
         model = Task
         fields = ["id", "title", "description", "order"]
 
     def validate(self, data):
+        """
+        Validates the data for Task model.
+        """
         start_date = data.get("start_date")
         finished_date = data.get("finished_date")
         deadline = data.get("deadline")
@@ -42,6 +57,10 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for List model.
+    """
+
     board = BoardSerializer(read_only=True)
     tasks = TaskSerializer(many=True, read_only=True)
 
@@ -51,12 +70,20 @@ class ListSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Comment model.
+    """
+
     class Meta:
         model = Comment
         fields = "__all__"
 
 
 class LabelSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Label model.
+    """
+
     class Meta:
         model = Label
         fields = "__all__"
