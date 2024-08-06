@@ -1,9 +1,16 @@
 from rest_framework import permissions
-from workspaces.models import WorkspacesMembership, Workspace
+
+from workspaces.models import WorkspacesMembership
 
 
 class BaseWorkspacePermission(permissions.BasePermission):
+    """
+    Base permission class for workspaces.
+    """
     def get_membership(self, user, workspace):
+        """
+        Get membership of a user with a workspace.
+        """
         if not user.is_authenticated:
             return None
         try:
@@ -13,7 +20,15 @@ class BaseWorkspacePermission(permissions.BasePermission):
 
 
 class IsWorkspaceAdminOrMemberReadOnly(BaseWorkspacePermission):
+    """
+    Check if the user is a member of the workspace or the owner of the workspace.
+    """
     def has_object_permission(self, request, view, obj):
+        """
+        Check if the user is a member of the workspace or the owner of the workspace.
+        Returns True if the user is the owner of the workspace or the user is a member
+        of the workspace with an admin access level and the HTTP method is safe.
+        """
         membership = self.get_membership(request.user, obj)
         if request.user == obj.owner:
             return True
@@ -28,6 +43,12 @@ class IsWorkspaceAdminOrMemberReadOnly(BaseWorkspacePermission):
 
 
 class IsWorkspaceMember(BaseWorkspacePermission):
+    """
+    Check if the user is a member of the workspace.
+    """
     def has_object_permission(self, request, view, obj):
+        """
+        Check if the user is a member of the workspace.
+        """
         membership = self.get_membership(request.user, obj)
         return membership
