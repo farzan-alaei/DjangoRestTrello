@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# اجرای migrate و makemigrations
+# entrypoint script for docker container
 python manage.py makemigrations
 python manage.py migrate
 
-# اجرای سرور جنگو
+# runserver
 python manage.py runserver 0.0.0.0:8000
