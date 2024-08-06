@@ -1,12 +1,10 @@
+import {extractCookies} from "$lib/cookies.js";
+
 import {error} from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({request, params}) {
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {

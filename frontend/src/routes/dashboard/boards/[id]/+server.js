@@ -1,13 +1,11 @@
+import {extractCookies} from "$lib/cookies.js";
+
 import {json} from '@sveltejs/kit';
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function PUT({fetch, params, request, url}) {
     const requestData = await request.json();
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {
@@ -48,11 +46,7 @@ export async function PUT({fetch, params, request, url}) {
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function DELETE({fetch, params, url, request}) {
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {
@@ -91,11 +85,7 @@ export async function DELETE({fetch, params, url, request}) {
 export async function POST({params, request, url}) {
     const requestData = await request.json();
 
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {
@@ -134,11 +124,7 @@ export async function POST({params, request, url}) {
 
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function PATCH({request, url}) {
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {

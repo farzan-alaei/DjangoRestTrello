@@ -1,10 +1,8 @@
+import {extractCookies} from "$lib/cookies.js";
+
 /** @type {import('@sveltejs/kit').RequestHandler} */
 export async function POST({ request }) {
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {

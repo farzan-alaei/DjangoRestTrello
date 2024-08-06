@@ -1,13 +1,11 @@
+import {extractCookies} from "$lib/cookies.js";
+
 /** @type {import('./$types').RequestHandler} */
 export async function POST({request}) {
     const {title, description} = await request.json();
 
     // Extract access token from cookies
-    const cookies = request.headers.get('cookie')?.split(';').reduce((cookies, cookie) => {
-        const [name, value] = cookie.split('=').map(c => c.trim());
-        cookies[name] = value;
-        return cookies;
-    }, {});
+    const cookies = extractCookies(request);
     const accessToken = cookies?.access;
 
     if (!accessToken) {
