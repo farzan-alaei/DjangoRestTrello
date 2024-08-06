@@ -1,20 +1,19 @@
-# استفاده از تصویر پایه node
+# Use the Node 20 slim image
 FROM node:20-slim
 
-# تنظیم پوشه کاری
+# Set the working directory to /app
 WORKDIR /app
 
-# کپی کردن فایل‌های package.json و نصب کتابخانه‌ها
+# Copy the package.json and package-lock.json files to the container
 COPY package*.json ./
 COPY svelte.config.js ./
 COPY vite.config.js ./
-RUN npm install
+RUN npm ci
 
-# کپی کردن باقی فایل‌های پروژه
+# Copy the rest of the application code to the container
 COPY . .
 
-# باز کردن پورت مورد نیاز
 EXPOSE 8080
 
-# اجرای سرور
+
 CMD ["npm", "run", "dev"]
