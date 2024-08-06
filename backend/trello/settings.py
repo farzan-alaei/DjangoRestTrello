@@ -179,14 +179,14 @@ REST_FRAMEWORK = {
 }
 # Spectacular settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Django Rest Trello',
-    'DESCRIPTION': 'API for Trello',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
+    "TITLE": "Django Rest Trello",
+    "DESCRIPTION": "API for Trello",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
 
-
+# JWT Authentication settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
