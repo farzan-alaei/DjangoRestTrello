@@ -11,6 +11,9 @@ from accounts.models import CustomUser
 
 
 class CustomUserAdmin(UserAdmin):
+    """
+    CustomUserAdmin class for customizing admin interface for CustomUser model.
+    """
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
